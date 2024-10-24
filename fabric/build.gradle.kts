@@ -31,3 +31,11 @@ dependencies {
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+
+tasks {
+    processResources {
+        filesMatching("fabric.mod.json") {
+            expand(mapOf("version" to project.version))
+        }
+    }
+}

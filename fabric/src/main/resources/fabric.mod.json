@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "lamp",
+  "version": "${version}",
+
+  "name": "Lamp",
+  "description": "A modern annotations-driven commands framework for Java and Kotlin",
+  "authors": [
+    "Revxrsal",
+    "Camper_Samu"
+  ],
+  "contact": {
+    "homepage": "https://github.com/GrimAnticheat/Grim",
+    "sources": "https://github.com/GrimAnticheat/Grim/issues"
+  },
+
+  "license": "GPLv3",
+  "icon": "assets/lamp/icon.png",
+  "environment": "*",
+  "depends": {
+    "fabricloader": ">=0.15.0",
+    "fabric": "*",
+    "minecraft": "*",
+    "java": ">=17"
+  },
+  "suggests": {
+  }
+}
