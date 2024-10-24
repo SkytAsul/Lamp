@@ -190,6 +190,6 @@ public interface FabricCommandActor extends CommandActor {
      */
     @Override @NotNull
     default String name() {
-        return isConsole() ? "Console" : requirePlayer().getEntityName();
+        return isConsole() ? "Console" : requirePlayer().getName().getString();
     }
 }

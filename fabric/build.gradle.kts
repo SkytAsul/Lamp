@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
     id("java")
-    id("fabric-loom") version "1.7-SNAPSHOT"
+    id("fabric-loom") version "1.8-SNAPSHOT"
 }
 
 repositories {
@@ -14,10 +14,10 @@ repositories {
     maven("https://maven.fabricmc.net/")
 }
 
-val minecraft_version = "1.20.1"
-val yarn_mappings = "1.20.1+build.6"
-val loader_version = "0.14.21"
-val fabric_version = "0.86.0+1.20.1"
+val minecraft_version = "1.21"
+val yarn_mappings = "1.21+build.9"
+val loader_version = "0.16.7"
+val fabric_version = "0.102.0+1.21"
 
 dependencies {
     implementation(project(":common"))
