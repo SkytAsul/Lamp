@@ -18,6 +18,7 @@ val minecraft_version = "1.21"
 val yarn_mappings = "1.21+build.9"
 val loader_version = "0.16.7"
 val fabric_version = "0.102.0+1.21"
+val permissions_version = "0.3.1"
 
 dependencies {
     implementation(project(":common"))
@@ -26,6 +27,7 @@ dependencies {
     mappings("net.fabricmc:yarn:${yarn_mappings}:v2")
     modImplementation("net.fabricmc:fabric-loader:${loader_version}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_version}")
+    include("me.lucko:fabric-permissions-api:${permissions_version}")?.let { modImplementation(it) }
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))

@@ -1,5 +1,6 @@
 package revxrsal.commands.fabric.sender;
 
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import revxrsal.commands.Lamp;
@@ -15,6 +16,6 @@ public enum FabricPermissionFactory implements revxrsal.commands.command.Command
         CommandPermission permissionAnn = annotations.get(CommandPermission.class);
         if (permissionAnn == null)
             return null;
-        return actor -> actor.source().hasPermissionLevel(permissionAnn.value());
+        return actor -> Permissions.check(actor.source(), permissionAnn.value(), permissionAnn.vanilla());
     }
 }
