@@ -303,9 +303,9 @@ public final class Lamp<A extends CommandActor> {
                 commandClass = registry.handler().getClass();
                 instance = registry.handler();
                 registered.addAll(tree.register(commandClass, instance, registry.paths()));
+            } else {
+                registered.addAll(tree.register(commandClass, instance));
             }
-
-            registered.addAll(tree.register(commandClass, instance));
         }
         return registered;
     }
