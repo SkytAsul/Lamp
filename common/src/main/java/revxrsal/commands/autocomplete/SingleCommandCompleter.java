@@ -145,7 +145,6 @@ final class SingleCommandCompleter<A extends CommandActor> {
                         continue;
                     if (targetFlag.isSwitch()) {
                         context.addResolvedArgument(targetFlag.name(), true);
-                        input.moveForward();
                         continue;
                     }
                     if (input.hasFinished()) {
