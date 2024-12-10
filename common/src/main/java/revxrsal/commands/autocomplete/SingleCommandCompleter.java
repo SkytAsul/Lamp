@@ -138,16 +138,18 @@ final class SingleCommandCompleter<A extends CommandActor> {
                 lastWasShort = true;
                 String shortenedString = next.substring(SHORT_FORMAT_PREFIX.length());
                 char[] spec = shortenedString.toCharArray();
-                input.readUnquotedString();
+                input.moveForward(SHORT_FORMAT_PREFIX.length());
                 for (char flag : spec) {
+                    input.moveForward();
                     @Nullable ParameterNode<A, Object> targetFlag = removeParameterWithShorthand(remainingFlags, flag);
                     if (targetFlag == null)
                         continue;
                     if (targetFlag.isSwitch()) {
                         context.addResolvedArgument(targetFlag.name(), true);
-                        continue;
                     }
                     if (input.hasFinished()) {
+                        if (targetFlag.isFlag())
+                            return;
                         for (ParameterNode<A, Object> remFlag : remainingFlags.values()) {
                             if (remFlag.shorthand() != null) {
                                 String flagCompletion = SHORT_FORMAT_PREFIX + shortenedString + remFlag.shorthand();
@@ -156,6 +158,8 @@ final class SingleCommandCompleter<A extends CommandActor> {
                         }
                         return;
                     }
+                    if (targetFlag.isSwitch())
+                        continue;
                     if (input.remaining() == 1 && input.peek() == ' ') {
                         Collection<String> parameterSuggestions = targetFlag.complete(context.actor(), input, context);
                         suggestions.addAll(parameterSuggestions);
