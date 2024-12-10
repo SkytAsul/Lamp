@@ -31,7 +31,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation that takes the place of a {@link @Command} of a {@link OrphanCommand}.
+ * An annotation that takes the place of a {@link Command @Command} of a {@link OrphanCommand}.
  * <p>
  * If a method has {@link Subcommand @Subcommand} on it, this annotation is unnecessary.
  * It simply exists in cases where the orphan command <em>is</em> the function itself, and
