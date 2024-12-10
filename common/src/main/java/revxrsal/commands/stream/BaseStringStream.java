@@ -143,6 +143,10 @@ class BaseStringStream implements StringStream {
     }
 
     public @NotNull String readUntil(char delimiter) {
+        return readUntil(delimiter, false);
+    }
+
+    public @NotNull String readUntil(char delimiter, boolean allowUnclosed) {
         StringBuilder result = new StringBuilder();
         boolean escaped = false;
         while (hasRemaining()) {
@@ -163,14 +167,24 @@ class BaseStringStream implements StringStream {
                 result.append(c);
             }
         }
-        throw new InputParseException(InputParseException.Cause.UNCLOSED_QUOTE);
+        if (allowUnclosed)
+            return result.toString();
+        else
+            throw new InputParseException(InputParseException.Cause.UNCLOSED_QUOTE);
     }
 
     @Override public @NotNull String peekString() {
+        if (!hasRemaining())
+            return "";
         int cursor = pos;
-        String value = readString();
-        pos = cursor;
-        return value;
+        char next = peek();
+        if (next == DOUBLE_QUOTE) {
+            pos += 1;
+            String result = readUntil(DOUBLE_QUOTE, true);
+            pos = cursor;
+            return result;
+        }
+        return peekUnquotedString();
     }
 
     public @NotNull String peekUnquotedString() {

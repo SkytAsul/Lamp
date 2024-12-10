@@ -166,6 +166,9 @@ public interface StringStream {
      * peek the next string until a whitespace character is encountered.
      * <p>
      * This will not move the cursor forward.
+     * <p>
+     * Note that, if the next string is an unclosed-quoted string, it will return
+     * the content inside the unclosed quote.
      *
      * @return The next string.
      */
