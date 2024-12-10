@@ -106,7 +106,8 @@ public interface StringStream {
     /**
      * Peeks the next number of character, without moving the cursor forward.
      *
-     * @return The number of characters to peek
+     * @param characters The number of characters to peek
+     * @return The peeked string
      */
     String peek(int characters);
 
