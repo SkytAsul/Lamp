@@ -39,10 +39,7 @@ import revxrsal.commands.parameter.primitives.*;
 import revxrsal.commands.stream.StringStream;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * An immutable registry of {@link ParameterType ParameterTypes} and
@@ -61,7 +58,7 @@ public final class ParameterTypes<A extends CommandActor> {
      * Highest priority factories. These come even before the user's
      * parameter types, but work in very specific conditions only.
      */
-    private static final List<ParameterFactory> HIGHEST_PRIORITY_FACTORIES = Arrays.asList(
+    private static final List<ParameterFactory> HIGHEST_PRIORITY_FACTORIES = Collections.singletonList(
             ParseWithParameterTypeFactory.INSTANCE
     );
 
