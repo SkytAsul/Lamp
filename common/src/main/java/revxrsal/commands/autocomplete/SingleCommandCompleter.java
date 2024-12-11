@@ -130,7 +130,7 @@ final class SingleCommandCompleter<A extends CommandActor> {
                 input.skipWhitespace();
                 CompletionResult result = completeParameter(targetFlag);
                 if (result == CompletionResult.HALT) {
-                    break;
+                    return;
                 } else if (input.hasRemaining() && input.peek() == ' ') {
                     input.skipWhitespace();
                 }
