@@ -140,13 +140,11 @@ public interface ParameterNode<A extends CommandActor, T> extends CommandNode<A>
     /**
      * Provides suggestions for the given user input.
      *
-     * @param actor   The actor to generate for
-     * @param input   The command input
      * @param context The execution context.
      * @return The
      */
     @Contract(pure = true)
-    @NotNull Collection<String> complete(A actor, @NotNull StringStream input, @NotNull ExecutionContext<A> context);
+    @NotNull Collection<String> complete(@NotNull ExecutionContext<A> context);
 
     /**
      * Returns the parameter Java type

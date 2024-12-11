@@ -31,7 +31,7 @@ final class SingleCommandCompleter<A extends CommandActor> {
     public SingleCommandCompleter(A actor, ExecutableCommand<A> command, MutableStringStream input) {
         this.command = command;
         this.input = input;
-        this.context = ExecutionContext.createMutable(command, actor, input.toImmutableCopy());
+        this.context = ExecutionContext.createMutable(command, actor, input.toImmutableView());
     }
 
     private void rememberPosition() {
@@ -84,7 +84,7 @@ final class SingleCommandCompleter<A extends CommandActor> {
             context.addResolvedArgument(parameter.name(), value);
             int positionAfterParsing = input.position();
             String consumed = restorePosition();
-            Collection<String> parameterSuggestions = parameter.complete(context.actor(), input, context);
+            Collection<String> parameterSuggestions = parameter.complete(context);
             input.setPosition(positionAfterParsing); // restore so that we can move forward
 
             if (input.hasFinished()) {
@@ -96,7 +96,7 @@ final class SingleCommandCompleter<A extends CommandActor> {
             return CompletionResult.CONTINUE;
         } catch (Throwable t) {
             String consumed = restorePosition();
-            filterSuggestions(consumed, parameter.complete(context.actor(), input, context));
+            filterSuggestions(consumed, parameter.complete(context));
             return CompletionResult.HALT;
         }
     }
@@ -123,7 +123,7 @@ final class SingleCommandCompleter<A extends CommandActor> {
                 if (input.hasFinished())
                     return;
                 if (input.remaining() == 1 && input.peek() == ' ') {
-                    Collection<String> parameterSuggestions = targetFlag.complete(context.actor(), input, context);
+                    Collection<String> parameterSuggestions = targetFlag.complete(context);
                     suggestions.addAll(parameterSuggestions);
                     return;
                 }
@@ -161,7 +161,7 @@ final class SingleCommandCompleter<A extends CommandActor> {
                     if (targetFlag.isSwitch())
                         continue;
                     if (input.remaining() == 1 && input.peek() == ' ') {
-                        Collection<String> parameterSuggestions = targetFlag.complete(context.actor(), input, context);
+                        Collection<String> parameterSuggestions = targetFlag.complete(context);
                         suggestions.addAll(parameterSuggestions);
                         return;
                     }

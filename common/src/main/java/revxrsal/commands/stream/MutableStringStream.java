@@ -204,4 +204,16 @@ public interface MutableStringStream extends StringStream {
     @Contract(pure = true, value = "-> new")
     MutableStringStream toMutableCopy();
 
+    /**
+     * Returns an immutable view of this {@link MutableStringStream}. A view is different
+     * from a copy, as it will reflect changes to the original string stream, but cannot
+     * be used to it.
+     *
+     * @return An immutable string stream view
+     */
+    @NotNull
+    @Contract(pure = true)
+    @Unmodifiable
+    StringStream toImmutableView();
+
 }

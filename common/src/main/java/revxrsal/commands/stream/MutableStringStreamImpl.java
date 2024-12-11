@@ -25,6 +25,7 @@ package revxrsal.commands.stream;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 import revxrsal.commands.exception.InputParseException;
 import revxrsal.commands.exception.InvalidBooleanException;
 import revxrsal.commands.exception.InvalidDecimalException;
@@ -33,6 +34,8 @@ import revxrsal.commands.exception.InvalidIntegerException;
 import java.util.Locale;
 
 public final class MutableStringStreamImpl extends BaseStringStream implements MutableStringStream {
+
+    private StringStreamView immutableView = null;
 
     /**
      * Creates a new {@link MutableStringStream} with its position at zero.
@@ -215,6 +218,83 @@ public final class MutableStringStreamImpl extends BaseStringStream implements M
     @Override
     public boolean isMutable() {
         return true;
+    }
+
+    @Override public @NotNull @Unmodifiable StringStream toImmutableView() {
+        if (immutableView == null)
+            immutableView = new StringStreamView();
+        return immutableView;
+    }
+
+    private class StringStreamView implements StringStream {
+
+        @Override public @NotNull String source() {
+            return MutableStringStreamImpl.this.source();
+        }
+
+        @Override public int totalSize() {
+            return MutableStringStreamImpl.this.totalSize();
+        }
+
+        @Override public int remaining() {
+            return MutableStringStreamImpl.this.remaining();
+        }
+
+        @Override public char peek() {
+            return MutableStringStreamImpl.this.peek();
+        }
+
+        @Override public String peek(int characters) {
+            return MutableStringStreamImpl.this.peek(characters);
+        }
+
+        @Override public char peekOffset(int offset) {
+            return MutableStringStreamImpl.this.peekOffset(offset);
+        }
+
+        @Override public boolean hasRemaining() {
+            return MutableStringStreamImpl.this.hasRemaining();
+        }
+
+        @Override public boolean hasFinished() {
+            return MutableStringStreamImpl.this.hasFinished();
+        }
+
+        @Override public boolean canRead(int characters) {
+            return MutableStringStreamImpl.this.canRead(characters);
+        }
+
+        @Override public int position() {
+            return MutableStringStreamImpl.this.position();
+        }
+
+        @Override public @NotNull String peekUnquotedString() {
+            return MutableStringStreamImpl.this.peekUnquotedString();
+        }
+
+        @Override public @NotNull String peekString() {
+            return MutableStringStreamImpl.this.peekString();
+        }
+
+        @Override public @NotNull String peekRemaining() {
+            return MutableStringStreamImpl.this.peekRemaining();
+        }
+
+        @Override public @NotNull @Unmodifiable StringStream toImmutableCopy() {
+            return MutableStringStreamImpl.this.toImmutableCopy();
+        }
+
+        @Override public @NotNull MutableStringStream toMutableCopy() {
+            return MutableStringStreamImpl.this.toMutableCopy();
+        }
+
+        @Override public boolean isMutable() {
+            return false;
+        }
+
+        @Override public boolean isEmpty() {
+            return MutableStringStreamImpl.this.isEmpty();
+        }
     }
 
 }
