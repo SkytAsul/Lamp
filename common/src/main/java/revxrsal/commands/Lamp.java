@@ -612,6 +612,8 @@ public final class Lamp<A extends CommandActor> {
             responseHandler(CompletionStageResponseHandler.INSTANCE);
             responseHandler(OptionalResponseHandler.INSTANCE);
             commandCondition(PermissionConditionChecker.INSTANCE);
+            commandCondition(CooldownCondition.INSTANCE);
+            hooks().onPostCommandExecuted(CooldownCondition.INSTANCE);
             accept(KotlinFeatureRegistry.INSTANCE);
         }
 
