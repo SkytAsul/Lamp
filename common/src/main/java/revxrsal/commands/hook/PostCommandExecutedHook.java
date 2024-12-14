@@ -29,18 +29,20 @@ import revxrsal.commands.command.ExecutableCommand;
 import revxrsal.commands.node.ExecutionContext;
 
 /**
- * A hook that gets called when a command is about to be executed
+ * A hook that gets called when a command is executed.
+ * <p>
+ * This hook is only fired for commands that have been successfully executed.
+ * Any command that errors in the process will not be invoked here.
  */
 @FunctionalInterface
-public interface CommandExecutedHook<A extends CommandActor> extends Hook {
+public interface PostCommandExecutedHook<A extends CommandActor> extends Hook {
 
     /**
-     * Invokes the hook for a command whose action is about to be executed
+     * Invokes the hook for a command whose action has been successfully executed
      *
-     * @param command      The command that will be executed
-     * @param context      The execution context
-     * @param cancelHandle A handle that allows the hook to cancel the command execution
+     * @param command The command that will be executed
+     * @param context The execution context
      */
-    void onExecuted(@NotNull ExecutableCommand<A> command, @NotNull ExecutionContext<A> context, @NotNull CancelHandle cancelHandle);
+    void onPostExecuted(@NotNull ExecutableCommand<A> command, @NotNull ExecutionContext<A> context);
 
 }

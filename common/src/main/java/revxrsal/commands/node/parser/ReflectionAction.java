@@ -67,6 +67,7 @@ public final class ReflectionAction<A extends CommandActor> implements CommandAc
                 //noinspection rawtypes
                 function.responseHandler().handleResponse(result, (ExecutionContext) context);
             }
+            context.lamp().hooks().onPostCommandExecuted(context.command(), context);
         } catch (Throwable t) {
             context.lamp().handleException(t, ErrorContext.executingFunction(context));
         }

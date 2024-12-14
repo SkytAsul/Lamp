@@ -138,6 +138,23 @@ public final class Hooks<A extends CommandActor> {
     }
 
     /**
+     * Calls all {@link PostCommandExecutedHook post-execution hooks}.
+     *
+     * @param command The command that was executed
+     * @param context The execution context
+     */
+    @ApiStatus.Internal
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public void onPostCommandExecuted(@NotNull ExecutableCommand<A> command, @NotNull ExecutionContext<A> context) {
+        for (Hook hook : hooks) {
+            if (hook instanceof PostCommandExecutedHook) {
+                PostCommandExecutedHook<A> executedHook = (PostCommandExecutedHook) hook;
+                executedHook.onPostExecuted(command, context);
+            }
+        }
+    }
+
+    /**
      * A builder for {@link Hooks}
      *
      * @param <A> The actor type
@@ -153,6 +170,16 @@ public final class Hooks<A extends CommandActor> {
          * @return this builder
          */
         public @NotNull Builder<A> onCommandExecuted(@NotNull CommandExecutedHook<? super A> hook) {
+            return hook(hook);
+        }
+
+        /**
+         * Adds a hook that runs after a command is executed
+         *
+         * @param hook Hook to register
+         * @return this builder
+         */
+        public @NotNull Builder<A> onPostCommandExecuted(@NotNull PostCommandExecutedHook<? super A> hook) {
             return hook(hook);
         }
 
