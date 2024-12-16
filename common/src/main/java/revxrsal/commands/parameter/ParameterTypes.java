@@ -34,6 +34,7 @@ import revxrsal.commands.command.ExecutableCommand;
 import revxrsal.commands.help.Help.ChildrenCommands;
 import revxrsal.commands.help.Help.RelatedCommands;
 import revxrsal.commands.help.Help.SiblingCommands;
+import revxrsal.commands.node.ExecutionContext;
 import revxrsal.commands.parameter.builtins.*;
 import revxrsal.commands.parameter.primitives.*;
 import revxrsal.commands.stream.StringStream;
@@ -87,6 +88,7 @@ public final class ParameterTypes<A extends CommandActor> {
             ContextParameter.Factory.forType(StringStream.class, (parameter, context) -> context.input()),
             ContextParameter.Factory.forType(ExecutableCommand.class, (parameter, context) -> context.command()),
             ContextParameter.Factory.forType(Lamp.class, (parameter, context) -> context.lamp()),
+            ContextParameter.Factory.forType(ExecutionContext.class, (parameter, context) -> context),
             ContextParameter.Factory.forTypeAndSubclasses(CommandActor.class, (parameter, context) -> context.actor()),
             ContextParameter.Factory.forType(RelatedCommands.class, (parameter, context) -> context.command().relatedCommands(context.actor())),
             ContextParameter.Factory.forType(SiblingCommands.class, (parameter, context) -> context.command().siblingCommands(context.actor())),
