@@ -31,9 +31,11 @@ import org.jetbrains.annotations.NotNull;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.LampBuilderVisitor;
 import revxrsal.commands.LampVisitor;
+import revxrsal.commands.brigadier.types.ArgumentTypes;
 import revxrsal.commands.command.CommandActor;
 import revxrsal.commands.exception.CommandExceptionHandler;
 import revxrsal.commands.parameter.ContextParameter;
+import revxrsal.commands.velocity.actor.ActorFactory;
 import revxrsal.commands.velocity.actor.VelocityCommandActor;
 import revxrsal.commands.velocity.annotation.CommandPermission;
 import revxrsal.commands.velocity.exception.VelocityExceptionHandler;
@@ -136,5 +138,49 @@ public final class VelocityVisitors {
      */
     public static <A extends VelocityCommandActor> @NotNull LampVisitor<A> brigadier(@NotNull VelocityLampConfig<A> config) {
         return new VelocityBrigadier<>(config);
+    }
+
+    /**
+     * Registers the commands into Velocity as {@link BrigadierCommand brigadier commands}.
+     *
+     * @param server        The server instance
+     * @param actorFactory  The actor factory
+     * @param argumentTypes The argument type registry
+     * @param <A>           The actor type
+     * @return The visitor
+     */
+    public static <A extends VelocityCommandActor> @NotNull LampVisitor<A> brigadier(
+            @NotNull ProxyServer server,
+            @NotNull ActorFactory<A> actorFactory,
+            @NotNull ArgumentTypes<A> argumentTypes
+    ) {
+        return new VelocityBrigadier<>(server, actorFactory, argumentTypes);
+    }
+
+    /**
+     * Registers the commands into Velocity as {@link BrigadierCommand brigadier commands}.
+     *
+     * @param server       The server instance
+     * @param actorFactory The actor factory
+     * @param <A>          The actor type
+     * @return The visitor
+     */
+    public static <A extends VelocityCommandActor> @NotNull LampVisitor<A> brigadier(
+            @NotNull ProxyServer server,
+            @NotNull ActorFactory<A> actorFactory
+    ) {
+        return new VelocityBrigadier<>(server, actorFactory, ArgumentTypes.<A>builder().build());
+    }
+
+    /**
+     * Registers the commands into Velocity as {@link BrigadierCommand brigadier commands}.
+     *
+     * @param server The server instance
+     * @return The visitor
+     */
+    public static @NotNull LampVisitor<VelocityCommandActor> brigadier(
+            @NotNull ProxyServer server
+    ) {
+        return new VelocityBrigadier<>(server, ActorFactory.defaultFactory(), ArgumentTypes.<VelocityCommandActor>builder().build());
     }
 }

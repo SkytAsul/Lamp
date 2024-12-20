@@ -30,14 +30,17 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
+ import com.velocitypowered.api.proxy.ProxyServer;
 import org.jetbrains.annotations.NotNull;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.LampVisitor;
 import revxrsal.commands.brigadier.BrigadierConverter;
 import revxrsal.commands.brigadier.BrigadierParser;
+import revxrsal.commands.brigadier.types.ArgumentTypes;
 import revxrsal.commands.command.ExecutableCommand;
 import revxrsal.commands.node.ParameterNode;
 import revxrsal.commands.velocity.VelocityLampConfig;
+import revxrsal.commands.velocity.actor.ActorFactory;
 import revxrsal.commands.velocity.actor.VelocityCommandActor;
 
 /**
@@ -47,21 +50,31 @@ import revxrsal.commands.velocity.actor.VelocityCommandActor;
  */
 public final class VelocityBrigadier<A extends VelocityCommandActor> implements LampVisitor<A>, BrigadierConverter<A, CommandSource> {
 
-    private final VelocityLampConfig<A> config;
+    private final ProxyServer server;
+    private final ActorFactory<A> actorFactory;
+    private final ArgumentTypes<A> argumentTypes;
     private final BrigadierParser<CommandSource, A> parser = new BrigadierParser<>(this);
 
-    public VelocityBrigadier(VelocityLampConfig<A> config) {
-        this.config = config;
+    public VelocityBrigadier(@NotNull VelocityLampConfig<A> config) {
+        this.server = config.server();
+        this.actorFactory = config.actorFactory();
+        this.argumentTypes = config.argumentTypes();
+    }
+
+    public VelocityBrigadier(@NotNull ProxyServer server, @NotNull ActorFactory<A> actorFactory, @NotNull ArgumentTypes<A> argumentTypes) {
+        this.server = server;
+        this.actorFactory = actorFactory;
+        this.argumentTypes = argumentTypes;
     }
 
     @Override
     public @NotNull ArgumentType<?> getArgumentType(@NotNull ParameterNode<A, ?> parameter) {
-        return config.argumentTypes().type(parameter);
+        return argumentTypes.type(parameter);
     }
 
     @Override
     public @NotNull A createActor(@NotNull CommandSource sender, @NotNull Lamp<A> lamp) {
-        return config.actorFactory().create(sender, lamp);
+        return actorFactory.create(sender, lamp);
     }
 
     @Override
@@ -73,10 +86,8 @@ public final class VelocityBrigadier<A extends VelocityCommandActor> implements 
         }
         for (CommandNode<CommandSource> node : root.getChildren()) {
             BrigadierCommand brigadierCommand = new BrigadierCommand((LiteralCommandNode<CommandSource>) node);
-            CommandMeta meta = config.server().getCommandManager().metaBuilder(node.getName())
-//                    .plugin(config.plugin())
-                    .build();
-            config.server().getCommandManager().register(meta, brigadierCommand);
+            CommandMeta meta = server.getCommandManager().metaBuilder(node.getName()).build();
+            server.getCommandManager().register(meta, brigadierCommand);
         }
     }
 }
