@@ -22,7 +22,7 @@ public final class BukkitVersion {
     private static final int MAJOR_VERSION, MINOR_VERSION, PATCH_NUMBER;
 
     /**
-     * The current version string, for example 1_17_R1
+     * The current version string, for example v1_17_R1
      */
     private static final String VERSION = fetchVersion();
 
@@ -118,6 +118,15 @@ public final class BukkitVersion {
      */
     public static int patchNumber() {
         return PATCH_NUMBER;
+    }
+
+    /**
+     * Returns the current version string, for example v1_17_R1
+     *
+     * @return The current version string
+     */
+    public static @NotNull String version() {
+        return VERSION;
     }
 
     /**
