@@ -20,6 +20,11 @@ public class BukkitExceptionHandler extends DefaultExceptionHandler<BukkitComman
     }
 
     @HandleException
+    public void onInvalidWorld(MissingLocationParameterException e, BukkitCommandActor actor) {
+        actor.error(legacyColorize("&cExpected &e" + e.axis().name().toLowerCase() + "&c."));
+    }
+
+    @HandleException
     public void onSenderNotConsole(SenderNotConsoleException e, BukkitCommandActor actor) {
         actor.error(legacyColorize("&cYou must be the console to execute this command!"));
     }

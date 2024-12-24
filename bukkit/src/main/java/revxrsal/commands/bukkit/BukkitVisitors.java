@@ -24,6 +24,7 @@
 package revxrsal.commands.bukkit;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -135,6 +136,7 @@ public final class BukkitVisitors {
                     .addParameterTypeLast(Player.class, new PlayerParameterType(brigadierEnabled))
                     .addParameterTypeLast(OfflinePlayer.class, new OfflinePlayerParameterType(brigadierEnabled))
                     .addParameterTypeLast(World.class, new WorldParameterType())
+                    .addParameterTypeLast(Location.class, new LocationParameterType())
                     .addParameterTypeFactoryLast(new EntitySelectorParameterTypeFactory());
             if (BukkitVersion.isBrigadierSupported())
                 builder.parameterTypes()
