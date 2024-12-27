@@ -19,6 +19,7 @@ val yarn_mappings = "1.21+build.9"
 val loader_version = "0.16.7"
 val fabric_version = "0.102.0+1.21"
 val permissions_version = "0.3.1"
+val java_version = 21
 
 dependencies {
     implementation(project(":common"))
@@ -30,12 +31,18 @@ dependencies {
     include("me.lucko:fabric-permissions-api:${permissions_version}")?.let { modImplementation(it) }
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(java_version))
 
 tasks {
     processResources {
         filesMatching("fabric.mod.json") {
-            expand(mapOf("version" to project.version))
+            expand(mapOf(
+                "version" to project.version,
+                "java_version" to java_version,
+                "loader_version" to loader_version,
+                "fabric_version" to fabric_version,
+                "minecraft_version" to minecraft_version
+            ))
         }
     }
 }

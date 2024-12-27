@@ -19,11 +19,9 @@
   "icon": "assets/lamp/icon.png",
   "environment": "*",
   "depends": {
-    "fabricloader": ">=0.15.0",
-    "fabric": "*",
-    "minecraft": "*",
-    "java": ">=17"
-  },
-  "suggests": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": ">=${fabric_version}",
+    "minecraft": ">=${minecraft_version}",
+    "java": ">=${java_version}"
   }
 }
