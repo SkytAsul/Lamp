@@ -10,8 +10,9 @@
     "Camper_Samu"
   ],
   "contact": {
-    "homepage": "https://github.com/GrimAnticheat/Grim",
-    "sources": "https://github.com/GrimAnticheat/Grim/issues"
+    "homepage": "https://foxhut.gitbook.io/lamp-docs",
+    "sources": "https://github.com/Revxrsal/Lamp",
+    "issues": "https://github.com/Revxrsal/Lamp/issues"
   },
 
   "license": "GPLv3",
