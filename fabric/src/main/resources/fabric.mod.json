@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "lamp",
+  "version": "${version}",
+  "name": "Lamp",
+  "description": "A modern annotations-driven commands framework for Java and Kotlin",
+  "authors": [
+    "Revxrsal",
+    "Camper_Samu"
+  ],
+  "contact": {
+    "homepage": "https://foxhut.gitbook.io/lamp-docs",
+    "sources": "https://github.com/Revxrsal/Lamp",
+    "issues": "https://github.com/Revxrsal/Lamp/issues"
+  },
+  "license": "GPLv3",
+  "icon": "assets/lamp/icon.png",
+  "environment": "*",
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": ">=${fabric_version}",
+    "minecraft": ">=${minecraft_version}",
+    "java": ">=${java_version}"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/pEGGF785zp"
+      }
+    }
+  }
+}

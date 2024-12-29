@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "lampexample",
+  "version": "${version}",
+  "name": "Lamp Example Mod",
+  "description": "",
+  "authors": [
+    "Camper_Samu",
+    "Revxrsal"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "com.example.mod.FabricTestMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "${minecraft_version}"
+  }
+}

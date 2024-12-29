@@ -31,6 +31,7 @@ include("examples")
 
 val exampleProjects = listOf(
     "bukkit-plugin",
+    "fabric-mod",
     "jda-bot",
     "minestom-server",
     "cli-app"
