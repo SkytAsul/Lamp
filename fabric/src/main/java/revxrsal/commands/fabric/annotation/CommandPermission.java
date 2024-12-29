@@ -2,6 +2,7 @@ package revxrsal.commands.fabric.annotation;
 
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.CommandSource;
+import org.jetbrains.annotations.NotNull;
 import revxrsal.commands.annotation.DistributeOnMethods;
 import revxrsal.commands.annotation.NotSender;
 
@@ -24,7 +25,7 @@ public @interface CommandPermission {
      *
      * @return The permission value
      */
-    String value();
+    @NotNull String value();
 
     /**
      * The Vanilla permission value to be used as a fallback. This is passed to {@link Permissions#check(CommandSource, String, int)}
