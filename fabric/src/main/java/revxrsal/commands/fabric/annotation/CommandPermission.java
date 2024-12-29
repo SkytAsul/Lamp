@@ -2,7 +2,6 @@ package revxrsal.commands.fabric.annotation;
 
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.CommandSource;
-import net.minecraft.server.command.ServerCommandSource;
 import revxrsal.commands.annotation.DistributeOnMethods;
 import revxrsal.commands.annotation.NotSender;
 

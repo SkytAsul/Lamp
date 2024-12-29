@@ -14,35 +14,39 @@ repositories {
     maven("https://maven.fabricmc.net/")
 }
 
-val minecraft_version = "1.21"
-val yarn_mappings = "1.21+build.9"
-val loader_version = "0.16.7"
-val fabric_version = "0.102.0+1.21"
-val permissions_version = "0.3.1"
-val java_version = 21
+val minecraftVersion = "1.21"
+val yarnMappings = "1.21+build.9"
+val loaderVersion = "0.16.7"
+val fabricVersion = "0.102.0+1.21"
+val permissionsVersion = "0.3.1"
+val javaVersion = 21
 
 dependencies {
     implementation(project(":common"))
     implementation(project(":brigadier"))
-    minecraft("com.mojang:minecraft:${minecraft_version}")
-    mappings("net.fabricmc:yarn:${yarn_mappings}:v2")
-    modImplementation("net.fabricmc:fabric-loader:${loader_version}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_version}")
-    include("me.lucko:fabric-permissions-api:${permissions_version}")?.let { modImplementation(it) }
+    minecraft("com.mojang:minecraft:${minecraftVersion}")
+    mappings("net.fabricmc:yarn:${yarnMappings}:v2")
+    modImplementation("net.fabricmc:fabric-loader:${loaderVersion}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricVersion}")
+    include("me.lucko:fabric-permissions-api:${permissionsVersion}")?.let {
+        modImplementation(it)
+    }
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(java_version))
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
 
 tasks {
     processResources {
         filesMatching("fabric.mod.json") {
-            expand(mapOf(
-                "version" to project.version,
-                "java_version" to java_version,
-                "loader_version" to loader_version,
-                "fabric_version" to fabric_version,
-                "minecraft_version" to minecraft_version
-            ))
+            expand(
+                mapOf(
+                    "version" to project.version,
+                    "java_version" to javaVersion,
+                    "loader_version" to loaderVersion,
+                    "fabric_version" to fabricVersion,
+                    "minecraft_version" to minecraftVersion
+                )
+            )
         }
     }
 }
