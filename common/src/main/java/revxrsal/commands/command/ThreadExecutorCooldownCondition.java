@@ -25,6 +25,7 @@ package revxrsal.commands.command;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import revxrsal.commands.annotation.Cooldown;
 import revxrsal.commands.exception.CooldownException;
 import revxrsal.commands.hook.PostCommandExecutedHook;
@@ -38,11 +39,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 @ApiStatus.Internal
-public enum CooldownCondition implements CommandCondition<CommandActor>, PostCommandExecutedHook<CommandActor> {
-
-    INSTANCE;
+public final class ThreadExecutorCooldownCondition implements CommandCondition<CommandActor>, PostCommandExecutedHook<CommandActor> {
 
     private static final ScheduledExecutorService COOLDOWN_POOL = Executors.newSingleThreadScheduledExecutor();
+
     private final Map<UUID, Map<Integer, Long>> cooldowns = new ConcurrentHashMap<>();
 
     @Override
@@ -55,12 +55,16 @@ public enum CooldownCondition implements CommandCondition<CommandActor>, PostCom
     }
 
     @Override public void test(@NotNull ExecutionContext<CommandActor> context) {
-        Cooldown cooldown = context.command().annotations().get(Cooldown.class);
-        if (cooldown == null || cooldown.value() == 0) return;
+        @Nullable Cooldown cooldown = context.command().annotations().get(Cooldown.class);
+        if (cooldown == null || cooldown.value() == 0)
+            return;
         UUID uuid = context.actor().uniqueId();
-        Map<Integer, Long> spans = cooldowns.get(uuid);
-        if (spans == null) return;
-        long created = spans.get(context.command().hashCode());
+        @Nullable Map<Integer, Long> spans = cooldowns.get(uuid);
+        if (spans == null)
+            return;
+        @Nullable Long created = spans.get(context.command().hashCode());
+        if (created == null)
+            return;
         long passed = System.currentTimeMillis() - created;
         long left = cooldown.unit().toMillis(cooldown.value()) - passed;
         if (left > 0 && left < 1000)
