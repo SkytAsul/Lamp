@@ -29,6 +29,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.mojang.brigadier.tree.RootCommandNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -56,6 +57,38 @@ public final class BrigadierParser<S, A extends CommandActor> {
     }
 
     /**
+     * A clone of {@link CommandNode#addChild(CommandNode)} that merges requirements
+     * by ORing them
+     *
+     * @param p    The command node to add to
+     * @param node The node to add
+     */
+    public static <S> void addChild(final CommandNode<S> p, final CommandNode<S> node) {
+        if (node instanceof RootCommandNode) {
+            throw new UnsupportedOperationException("Cannot add a RootCommandNode as a child to any other CommandNode");
+        }
+
+        final CommandNode<S> child = Nodes.getChildren(p).get(node.getName());
+        if (child != null) {
+            // We've found something to merge onto
+            if (node.getCommand() != null) {
+                Nodes.setCommand(child, node.getCommand());
+            }
+            Nodes.setRequirement(child, child.getRequirement().or(node.getRequirement()));
+            for (final CommandNode<S> grandchild : node.getChildren()) {
+                addChild(child, grandchild);
+            }
+        } else {
+            Nodes.getChildren(p).put(node.getName(), node);
+            if (node instanceof LiteralCommandNode) {
+                Nodes.getLiterals(p).put(node.getName(), (LiteralCommandNode<S>) node);
+            } else if (node instanceof ArgumentCommandNode) {
+                Nodes.getArguments(p).put(node.getName(), (ArgumentCommandNode<S, ?>) node);
+            }
+        }
+    }
+
+    /**
      * Creates a Brigadier {@link CommandNode} based on the given {@link ExecutableCommand}
      *
      * @param command Command to wrap
@@ -73,6 +106,7 @@ public final class BrigadierParser<S, A extends CommandActor> {
             BNode<S> elementNode;
             if (node.isLiteral()) {
                 elementNode = BNode.literal(node.name());
+                elementNode.requires(createRequirement(command.permission(), command.lamp()));
             } else if (node instanceof ParameterNode) {
                 ParameterNode<A, ?> parameter = (ParameterNode<A, ?>) node;
                 if (parameter.isSwitch() || parameter.isFlag())

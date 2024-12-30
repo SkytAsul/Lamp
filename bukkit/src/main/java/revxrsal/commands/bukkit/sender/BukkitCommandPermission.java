@@ -39,8 +39,7 @@ public final class BukkitCommandPermission implements CommandPermission<BukkitCo
 
     @Override
     public String toString() {
-        return "BukkitCommandPermission[" +
-                "permission=" + permission + ']';
+        return "BukkitCommandPermission[permission=" + permission.getName() + "]";
     }
 
 }

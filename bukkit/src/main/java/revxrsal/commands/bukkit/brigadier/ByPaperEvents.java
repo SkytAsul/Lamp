@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
+import static revxrsal.commands.brigadier.BrigadierParser.addChild;
 import static revxrsal.commands.bukkit.brigadier.BrigadierUtil.getBukkitSender;
 import static revxrsal.commands.bukkit.brigadier.BrigadierUtil.renameLiteralNode;
 import static revxrsal.commands.util.Strings.stripNamespace;
@@ -105,12 +106,12 @@ final class ByPaperEvents<A extends BukkitCommandActor> implements BukkitBrigadi
 
         for (String alias : aliases) {
             if (node.getLiteral().equals(alias)) {
-                rootNode.addChild(node);
+                addChild(rootNode, node);
             } else {
                 LiteralCommandNode<Object> redirectNode = literal(alias)
                         .redirect(node)
                         .build();
-                rootNode.addChild(redirectNode);
+                addChild(rootNode, redirectNode);
             }
         }
     }

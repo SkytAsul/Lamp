@@ -83,7 +83,7 @@ final class ByPaperLifecycle<A extends BukkitCommandActor> implements BukkitBrig
 
     @Override public void register(ExecutableCommand<A> command) {
         LiteralCommandNode<CommandSourceStack> node = parser.createNode(command);
-        root.addChild(node);
+        BrigadierParser.addChild(root, node);
     }
 
     @Override public @NotNull ArgumentType<?> getArgumentType(@NotNull ParameterNode<A, ?> parameter) {

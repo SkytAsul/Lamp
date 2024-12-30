@@ -30,7 +30,7 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.CommandSource;
- import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.ProxyServer;
 import org.jetbrains.annotations.NotNull;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.LampVisitor;
@@ -82,7 +82,7 @@ public final class VelocityBrigadier<A extends VelocityCommandActor> implements 
         RootCommandNode<CommandSource> root = new RootCommandNode<>();
         for (ExecutableCommand<A> command : lamp.registry()) {
             LiteralCommandNode<CommandSource> node = parser.createNode(command);
-            root.addChild(node);
+            BrigadierParser.addChild(root, node);
         }
         for (CommandNode<CommandSource> node : root.getChildren()) {
             BrigadierCommand brigadierCommand = new BrigadierCommand((LiteralCommandNode<CommandSource>) node);

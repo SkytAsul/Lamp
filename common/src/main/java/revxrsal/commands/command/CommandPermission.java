@@ -30,6 +30,7 @@ import revxrsal.commands.annotation.list.AnnotationList;
 
 import java.lang.annotation.Annotation;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static revxrsal.commands.util.Classes.checkRetention;
 
@@ -40,7 +41,7 @@ import static revxrsal.commands.util.Classes.checkRetention;
  * This implementation may vary depending on the target platform
  */
 @FunctionalInterface
-public interface CommandPermission<A extends CommandActor> {
+public interface CommandPermission<A extends CommandActor> extends Predicate<A> {
 
     /**
      * Returns a {@link CommandPermission} that always returns true for
@@ -61,6 +62,17 @@ public interface CommandPermission<A extends CommandActor> {
      * @return {@code true} if they can use it, false if otherwise.
      */
     boolean isExecutableBy(@NotNull A actor);
+
+    /**
+     * Returns whether the sender has permission to use this command
+     * or not.
+     *
+     * @param a Actor to test against
+     * @return {@code true} if they can use it, false if otherwise.
+     */
+    @Override default boolean test(A a) {
+        return isExecutableBy(a);
+    }
 
     /**
      * Represents a convenient way to register custom {@link CommandPermission}

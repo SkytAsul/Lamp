@@ -56,7 +56,7 @@ public final class FabricCommandHooks<A extends FabricCommandActor> implements C
         this.config = config;
         EVENT.register((dispatcher, registryAccess, environment) -> {
             for (CommandNode<ServerCommandSource> child : root.getChildren()) {
-                dispatcher.getRoot().addChild(child);
+                BrigadierParser.addChild(dispatcher.getRoot(), child);
             }
         });
     }
@@ -64,7 +64,7 @@ public final class FabricCommandHooks<A extends FabricCommandActor> implements C
     @Override
     public void onRegistered(@NotNull ExecutableCommand<A> command, @NotNull CancelHandle cancelHandle) {
         LiteralCommandNode<ServerCommandSource> node = parser.createNode(command);
-        root.addChild(node);
+        BrigadierParser.addChild(root, node);
     }
 
     @Override

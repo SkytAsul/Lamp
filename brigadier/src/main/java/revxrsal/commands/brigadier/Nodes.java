@@ -27,8 +27,11 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -39,6 +42,15 @@ final class Nodes {
     // CommandNode#command
     private static final Field COMMAND;
 
+    // CommandNode#children
+    private static final Field CHILDREN;
+
+    // CommandNode#literals
+    private static final Field LITERALS;
+
+    // CommandNode#arguments
+    private static final Field ARGUMENTS;
+
     // CommandNode#requirement
     private static final Field REQUIREMENT;
 
@@ -47,16 +59,23 @@ final class Nodes {
 
     static {
         try {
-
             COMMAND = CommandNode.class.getDeclaredField("command");
             COMMAND.setAccessible(true);
 
             REQUIREMENT = CommandNode.class.getDeclaredField("requirement");
             REQUIREMENT.setAccessible(true);
 
+            CHILDREN = CommandNode.class.getDeclaredField("children");
+            CHILDREN.setAccessible(true);
+
+            LITERALS = CommandNode.class.getDeclaredField("literals");
+            LITERALS.setAccessible(true);
+
+            ARGUMENTS = CommandNode.class.getDeclaredField("arguments");
+            ARGUMENTS.setAccessible(true);
+
             CUSTOM_SUGGESTIONS = ArgumentCommandNode.class.getDeclaredField("customSuggestions");
             CUSTOM_SUGGESTIONS.setAccessible(true);
-
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -83,7 +102,7 @@ final class Nodes {
      * @param node        Node to set requirement for
      * @param requirement Requirement to set
      */
-    public static <T> void setRequirement(CommandNode<T> node, Predicate<T> requirement) {
+    public static <T> void setRequirement(@NotNull CommandNode<T> node, @NotNull Predicate<T> requirement) {
         try {
             Nodes.REQUIREMENT.set(node, requirement);
         } catch (IllegalAccessException e) {
@@ -100,6 +119,33 @@ final class Nodes {
     public static <S, T> void setSuggestionProvider(ArgumentCommandNode<S, T> node, SuggestionProvider<S> provider) {
         try {
             CUSTOM_SUGGESTIONS.set(node, provider);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <S> @NotNull Map<String, CommandNode<S>> getChildren(@NotNull CommandNode<S> node) {
+        try {
+            //noinspection unchecked
+            return (Map<String, CommandNode<S>>) CHILDREN.get(node);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <S> @NotNull Map<String, LiteralCommandNode<S>> getLiterals(@NotNull CommandNode<S> node) {
+        try {
+            //noinspection unchecked
+            return (Map<String, LiteralCommandNode<S>>) LITERALS.get(node);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <S> @NotNull Map<String, ArgumentCommandNode<S, ?>> getArguments(@NotNull CommandNode<S> node) {
+        try {
+            //noinspection unchecked
+            return (Map<String, ArgumentCommandNode<S, ?>>) ARGUMENTS.get(node);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }

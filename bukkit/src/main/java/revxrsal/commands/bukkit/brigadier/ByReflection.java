@@ -137,8 +137,8 @@ final class ByReflection<A extends BukkitCommandActor> implements BukkitBrigadie
         RootCommandNode root = dispatcher.getRoot();
 
         BrigadierUtil.removeChild(root, node.getName());
-        root.addChild(node);
-        registeredNodes.addChild(node);
+        BrigadierParser.addChild(root, node);
+        BrigadierParser.addChild(registeredNodes, node);
     }
 
     @Override public void register(ExecutableCommand<A> command) {
@@ -203,7 +203,7 @@ final class ByReflection<A extends BukkitCommandActor> implements BukkitBrigadie
 
             for (CommandNode<?> node : registeredNodes.getChildren()) {
                 removeChild(root, node.getName());
-                root.addChild(node);
+                BrigadierParser.addChild(root, (CommandNode) node);
             }
         }
 

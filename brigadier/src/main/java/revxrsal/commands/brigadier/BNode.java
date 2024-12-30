@@ -33,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
+import static revxrsal.commands.brigadier.BrigadierParser.addChild;
 import static revxrsal.commands.util.Preconditions.notNull;
 
 final class BNode<S> {
@@ -71,12 +72,12 @@ final class BNode<S> {
     }
 
     public @NotNull BNode<S> then(@NotNull BNode<S> node) {
-        this.node.addChild(node.node);
+        addChild(this.node, node.node);
         return this;
     }
 
     public @NotNull BNode<S> then(@NotNull CommandNode<S> node) {
-        this.node.addChild(node);
+        addChild(this.node, node);
         return this;
     }
 

@@ -35,6 +35,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 
+import static revxrsal.commands.brigadier.BrigadierParser.addChild;
+
 /**
  * A utility to modify {@link CommandNode}s reflectively.
  */
@@ -94,7 +96,7 @@ final class BrigadierUtil {
     public static <S> LiteralCommandNode<S> renameLiteralNode(LiteralCommandNode<S> node, String newLiteral) {
         LiteralCommandNode<S> clone = new LiteralCommandNode<>(newLiteral, node.getCommand(), node.getRequirement(), node.getRedirect(), node.getRedirectModifier(), node.isFork());
         for (CommandNode<S> child : node.getChildren()) {
-            clone.addChild(child);
+            addChild(clone, child);
         }
         return clone;
     }
