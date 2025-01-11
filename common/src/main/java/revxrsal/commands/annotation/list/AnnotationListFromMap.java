@@ -63,7 +63,7 @@ final class AnnotationListFromMap implements AnnotationList {
     }
 
     public static @NotNull Map<Class<? extends Annotation>, Annotation> toMap(@NotNull Iterable<Annotation> annotations) {
-        Map<Class<? extends Annotation>, Annotation> map = new HashMap<>();
+        Map<Class<? extends Annotation>, Annotation> map = new LinkedHashMap<>();
         for (Annotation annotation : annotations) {
             map.put(annotation.annotationType(), annotation);
         }
@@ -71,7 +71,7 @@ final class AnnotationListFromMap implements AnnotationList {
     }
 
     public static @NotNull Map<Class<? extends Annotation>, Annotation> toMap(@NotNull Annotation[] annotations) {
-        Map<Class<? extends Annotation>, Annotation> map = new HashMap<>();
+        Map<Class<? extends Annotation>, Annotation> map = new LinkedHashMap<>();
         for (Annotation annotation : annotations) {
             map.put(annotation.annotationType(), annotation);
         }
@@ -146,7 +146,7 @@ final class AnnotationListFromMap implements AnnotationList {
             @NotNull AnnotatedElement element,
             @NotNull Map<Class<? extends Annotation>, Set<AnnotationReplacer<?>>> replacers
     ) {
-        Map<Class<? extends Annotation>, Annotation> annotations = new HashMap<>(this.annotations);
+        Map<Class<? extends Annotation>, Annotation> annotations = new LinkedHashMap<>(this.annotations);
         for (Annotation annotation : this.annotations.values()) {
             for (AnnotationReplacer replacer : replacers.getOrDefault(annotation.annotationType(), emptySet())) {
                 Collection<Annotation> newAnnotations = replacer.replaceAnnotation(element, annotation);
@@ -163,7 +163,7 @@ final class AnnotationListFromMap implements AnnotationList {
 
     @Override
     public @NotNull Map<Class<?>, Annotation> toMutableMap() {
-        return new HashMap<>(annotations);
+        return new LinkedHashMap<>(annotations);
     }
 
     @Override
@@ -187,7 +187,7 @@ final class AnnotationListFromMap implements AnnotationList {
 
     @Override
     public @NotNull AnnotationList withAnnotations(boolean overrideExisting, @NotNull Annotation... annotations) {
-        HashMap<Class<? extends Annotation>, Annotation> map = new HashMap<>(this.annotations);
+        LinkedHashMap<Class<? extends Annotation>, Annotation> map = new LinkedHashMap<>(this.annotations);
         for (@NotNull Annotation annotation : annotations) {
             if (overrideExisting)
                 map.put(annotation.annotationType(), annotation);
