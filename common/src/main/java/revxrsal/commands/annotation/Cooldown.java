@@ -102,7 +102,7 @@ import java.util.concurrent.TimeUnit;
  */
 @DistributeOnMethods
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD, ElementType.TYPE, ElementType.PARAMETER})
 public @interface Cooldown {
 
     /**
