@@ -23,6 +23,8 @@
  */
 package revxrsal.commands.annotation;
 
+import revxrsal.commands.command.CooldownHandle;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -31,6 +33,72 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Adds a cooldown to the command.
+ * <p>
+ * Note that this annotation can be used in two ways:
+ * <ol>
+ *     <li>On methods and on classes, as follows: <pre>
+ * {@code
+ *     @Command("foo")
+ *     @Cooldown(value = 10, unit = TimeUnit.SECONDS)
+ *     public void foo(...) {
+ *         // ... command action here
+ *     }
+ *     }
+ *     </pre>
+ *     Which will create a simple cooldown of 10 seconds on the user. The user
+ *     will always be put on cooldown if the command successfully executes, and will
+ *     receive a {@link revxrsal.commands.exception.CooldownException} if they attempt to execute
+ *     it during the cooldown.</li>
+ *
+ *     <li>On parameters combined with {@link CooldownHandle}: <pre>
+ * {@code
+ *
+ *     @Command("foo")
+ *     public void foo(
+ *          ...,
+ *          @Cooldown(value = 10, unit = TimeUnit.SECONDS) CooldownHandle cooldownHandle
+ *     ) {
+ *         if (cooldownHandle.isOnCooldown()) {
+ *             long secondsLeft = cooldownHandle.remainingTime(TimeUnit.SECONDS);
+ *             actor.reply("You must wait " + secondsLeft + " second(s) before using this commnd again!");
+ *             return;
+ *         }
+ *         // ... command action here
+ *
+ *         // then put the user on cooldown:
+ *         cooldownHandle.cooldown();
+ *     }
+ *     }
+ *     </pre>
+ *     or:
+ * <pre>
+ * {@code
+ *
+ *     @Command("foo")
+ *     public void foo(
+ *          ...,
+ *          @Cooldown(value = 10, unit = TimeUnit.SECONDS) CooldownHandle cooldownHandle
+ *     ) {
+ *         cooldownHandle.requireNotOnCooldown();
+ *         // ^^^ will throw a CooldownException if the user is on cooldown
+ *
+ *         // ... command action here
+ *
+ *         // then put the user on cooldown:
+ *         cooldownHandle.cooldown();
+ *     }
+ *     }
+ *     </pre>
+ *     A {@link CooldownHandle} requires more code, however it gives you a lot more flexibility on deciding
+ *     when to cooldown the user. It also provides useful methods such as {@link CooldownHandle#removeCooldown()}
+ *     and {@link CooldownHandle#remainingTime(TimeUnit)}, allowing for better customization of the cooldown
+ *     behavior.</li>
+ * </ol>
+ *
+ * <strong>Note: </strong> {@link CooldownHandle} can be used without a {@link Cooldown @Cooldown} annotation.
+ * See the documentation of {@link CooldownHandle} for more details.
+ *
+ * @see CooldownHandle
  */
 @DistributeOnMethods
 @Retention(RetentionPolicy.RUNTIME)

@@ -614,6 +614,7 @@ public final class Lamp<A extends CommandActor> {
             commandCondition(PermissionConditionChecker.INSTANCE);
             ThreadExecutorCooldownCondition cooldownCondition = new ThreadExecutorCooldownCondition();
             commandCondition(cooldownCondition);
+            parameterTypes().addContextParameterFactoryLast(cooldownCondition);
             hooks().onPostCommandExecuted(cooldownCondition);
             accept(KotlinFeatureRegistry.INSTANCE);
         }
