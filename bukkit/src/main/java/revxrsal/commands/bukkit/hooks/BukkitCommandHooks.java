@@ -40,6 +40,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import static revxrsal.commands.bukkit.util.PluginCommands.getCommand;
+
 public final class BukkitCommandHooks<A extends BukkitCommandActor> implements CommandRegisteredHook<A>,
         CommandUnregisteredHook<A> {
 
@@ -85,7 +87,7 @@ public final class BukkitCommandHooks<A extends BukkitCommandActor> implements C
 
         // check there's no other '/label' command. if so, unregister.
         if (!command.lamp().registry().any(c -> c != command && c.firstNode().name().equals(label))) {
-            cmd = plugin.getCommand(label);
+            cmd = getCommand(plugin, label);
             if (cmd != null)
                 PluginCommands.unregister(cmd, plugin);
         }

@@ -30,12 +30,15 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.CheckReturnValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -51,12 +54,14 @@ public final class PluginCommands {
 
     private static final Constructor<PluginCommand> COMMAND_CONSTRUCTOR;
     private static final @Nullable Field KNOWN_COMMANDS;
+    private static final @Nullable MethodHandle GET_PLUGIN_META;
     private static final CommandMap COMMAND_MAP;
 
     static {
         Constructor<PluginCommand> ctr;
         Field knownCommands = null;
         CommandMap commandMap;
+        MethodHandle getPluginMeta;
         try {
             ctr = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
             ctr.setAccessible(true);
@@ -67,6 +72,9 @@ public final class PluginCommands {
                 knownCommands = SimpleCommandMap.class.getDeclaredField("knownCommands");
                 knownCommands.setAccessible(true);
             }
+            getPluginMeta = MethodHandles.lookup().unreflect(
+                    JavaPlugin.class.getDeclaredMethod("getPluginMeta")
+            );
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
             throw new IllegalStateException("Unable to access PluginCommand(String, Plugin) construtor!");
@@ -77,6 +85,7 @@ public final class PluginCommands {
         COMMAND_CONSTRUCTOR = ctr;
         COMMAND_MAP = commandMap;
         KNOWN_COMMANDS = knownCommands;
+        GET_PLUGIN_META = getPluginMeta;
     }
 
     private PluginCommands() {
@@ -92,7 +101,7 @@ public final class PluginCommands {
     @SneakyThrows
     @CheckReturnValue
     public static @NotNull PluginCommand create(String fallbackPrefix, String name, @NotNull JavaPlugin plugin) {
-        PluginCommand command = plugin.getCommand(name);
+        PluginCommand command = getCommand(plugin, name);
         if (command != null)
             return command;
         command = COMMAND_CONSTRUCTOR.newInstance(name, plugin);
@@ -116,4 +125,19 @@ public final class PluginCommands {
             return (Map<String, Command>) KNOWN_COMMANDS.get(COMMAND_MAP);
         return null;
     }
+
+    public static @Nullable PluginCommand getCommand(@NotNull JavaPlugin plugin, @NotNull String name) {
+        @Nullable Object meta = getPluginMetaOrNull(plugin);
+        if (!(meta instanceof PluginDescriptionFile)) {
+            return null;
+        }
+        return plugin.getCommand(name);
+    }
+
+    @SneakyThrows private static @Nullable Object getPluginMetaOrNull(@NotNull JavaPlugin plugin) {
+        if (GET_PLUGIN_META == null)
+            return null;
+        return GET_PLUGIN_META.invoke(plugin);
+    }
+
 }

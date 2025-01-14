@@ -93,5 +93,4 @@ final class ByPaperLifecycle<A extends BukkitCommandActor> implements BukkitBrig
     @Override public @NotNull A createActor(@NotNull CommandSourceStack sender, @NotNull Lamp<A> lamp) {
         return actorFactory.create(sender.getExecutor() == null ? sender.getSender() : sender.getExecutor(), lamp);
     }
-
 }

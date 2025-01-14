@@ -59,6 +59,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static revxrsal.commands.bukkit.brigadier.BrigadierUtil.*;
+import static revxrsal.commands.bukkit.util.PluginCommands.getCommand;
 
 final class ByReflection<A extends BukkitCommandActor> implements BukkitBrigadierBridge<A>, BrigadierConverter<A, Object> {
 
@@ -145,7 +146,7 @@ final class ByReflection<A extends BukkitCommandActor> implements BukkitBrigadie
         Objects.requireNonNull(command, "command");
         LiteralCommandNode<Object> node = parser.createNode(command);
 
-        PluginCommand bCommand = plugin.getCommand(command.firstNode().name());
+        PluginCommand bCommand = getCommand(plugin, command.firstNode().name());
         Collection<String> aliases = BukkitBrigadierBridge.getAliases(bCommand);
         if (!aliases.contains(node.getLiteral())) {
             node = renameLiteralNode(node, command.firstNode().name());

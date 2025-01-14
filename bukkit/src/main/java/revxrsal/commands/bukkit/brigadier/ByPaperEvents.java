@@ -55,6 +55,7 @@ import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static revxrsal.commands.brigadier.BrigadierParser.addChild;
 import static revxrsal.commands.bukkit.brigadier.BrigadierUtil.getBukkitSender;
 import static revxrsal.commands.bukkit.brigadier.BrigadierUtil.renameLiteralNode;
+import static revxrsal.commands.bukkit.util.PluginCommands.getCommand;
 import static revxrsal.commands.util.Strings.stripNamespace;
 
 @SuppressWarnings({"rawtypes"})
@@ -98,7 +99,7 @@ final class ByPaperEvents<A extends BukkitCommandActor> implements BukkitBrigadi
         }
         LiteralCommandNode<Object> node = parser.createNode(command);
         Collection<String> aliases = BukkitBrigadierBridge.getAliases(
-                plugin.getCommand(command.firstNode().name())
+                getCommand(plugin, command.firstNode().name())
         );
         if (!aliases.contains(node.getLiteral())) {
             node = renameLiteralNode(node, command.firstNode().name());
