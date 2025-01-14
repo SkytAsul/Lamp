@@ -28,7 +28,9 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -46,7 +48,12 @@ final class Nodes {
     private static final Field CHILDREN;
 
     // CommandNode#literals
-    private static final Field LITERALS;
+    // note: Velocity does NOT have this field
+    private static @Nullable Field LITERALS;
+
+    // CommandNode#hasLiterals
+    // note: ONLY Velocity has this field
+    private static @Nullable Field HAS_LITERALS;
 
     // CommandNode#arguments
     private static final Field ARGUMENTS;
@@ -68,9 +75,13 @@ final class Nodes {
             CHILDREN = CommandNode.class.getDeclaredField("children");
             CHILDREN.setAccessible(true);
 
-            LITERALS = CommandNode.class.getDeclaredField("literals");
-            LITERALS.setAccessible(true);
-
+            try {
+                LITERALS = CommandNode.class.getDeclaredField("literals");
+                LITERALS.setAccessible(true);
+            } catch (Throwable t) {
+                HAS_LITERALS = CommandNode.class.getDeclaredField("hasLiterals");
+                HAS_LITERALS.setAccessible(true);
+            }
             ARGUMENTS = CommandNode.class.getDeclaredField("arguments");
             ARGUMENTS.setAccessible(true);
 
@@ -133,7 +144,9 @@ final class Nodes {
         }
     }
 
-    public static <S> @NotNull Map<String, LiteralCommandNode<S>> getLiterals(@NotNull CommandNode<S> node) {
+    public static <S> @Nullable Map<String, LiteralCommandNode<S>> getLiterals(@NotNull CommandNode<S> node) {
+        if (LITERALS == null)
+            return null;
         try {
             //noinspection unchecked
             return (Map<String, LiteralCommandNode<S>>) LITERALS.get(node);
@@ -149,5 +162,12 @@ final class Nodes {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @SneakyThrows
+    public static <S> void setHasLiterals(@NotNull CommandNode<S> node, boolean b) {
+        if (HAS_LITERALS == null)
+            return;
+        HAS_LITERALS.setBoolean(node, b);
     }
 }

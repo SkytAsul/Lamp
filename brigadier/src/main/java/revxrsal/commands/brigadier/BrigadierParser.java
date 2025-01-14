@@ -43,6 +43,7 @@ import revxrsal.commands.stream.StringStream;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 import static revxrsal.commands.node.DispatcherSettings.LONG_FORMAT_PREFIX;
@@ -81,7 +82,11 @@ public final class BrigadierParser<S, A extends CommandActor> {
         } else {
             Nodes.getChildren(p).put(node.getName(), node);
             if (node instanceof LiteralCommandNode) {
-                Nodes.getLiterals(p).put(node.getName(), (LiteralCommandNode<S>) node);
+                Map<String, LiteralCommandNode<S>> literals = Nodes.getLiterals(p);
+                if (literals != null)
+                    literals.put(node.getName(), (LiteralCommandNode<S>) node);
+                else
+                    Nodes.setHasLiterals(p, true);
             } else if (node instanceof ArgumentCommandNode) {
                 Nodes.getArguments(p).put(node.getName(), (ArgumentCommandNode<S, ?>) node);
             }
