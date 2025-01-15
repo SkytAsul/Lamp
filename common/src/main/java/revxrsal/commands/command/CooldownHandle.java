@@ -114,6 +114,8 @@ public interface CooldownHandle {
 
     /**
      * Returns the elapsed time since the cooldown started in milliseconds.
+     * <p>
+     * If the user is not on cooldown, this will return zero.
      *
      * @return Elapsed time in milliseconds.
      */
