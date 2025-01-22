@@ -97,8 +97,9 @@ public final class Reflections {
         List<Class<?>> classes = new ArrayList<>();
         classes.add(c);
         Class<?> enclosingClass = c.getEnclosingClass();
-        while (c.getEnclosingClass() != null) {
+        while (enclosingClass != null) {
             classes.add(c = enclosingClass);
+            enclosingClass = c.getEnclosingClass();
         }
         java.util.Collections.reverse(classes);
         return classes;
