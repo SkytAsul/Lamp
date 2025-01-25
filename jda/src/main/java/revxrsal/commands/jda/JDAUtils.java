@@ -208,7 +208,7 @@ public final class JDAUtils {
                 parameter.description() == null ? parameter.name() : parameter.description()
         );
         data.setRequired(parameter.isRequired());
-        if (!parameter.suggestions().equals(SuggestionProvider.empty()))
+        if (parameter.type() != boolean.class && !parameter.suggestions().equals(SuggestionProvider.empty()))
             data.setAutoComplete(true);
         setParameterRange(data, parameter);
         Length length = parameter.annotations().get(Length.class);
