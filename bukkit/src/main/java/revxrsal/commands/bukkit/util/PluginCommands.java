@@ -61,7 +61,13 @@ public final class PluginCommands {
         Constructor<PluginCommand> ctr;
         Field knownCommands = null;
         CommandMap commandMap;
-        MethodHandle getPluginMeta;
+        MethodHandle getPluginMeta = null;
+        try {
+            getPluginMeta = MethodHandles.lookup().unreflect(
+                    JavaPlugin.class.getDeclaredMethod("getPluginMeta")
+            );
+        } catch (Exception ignored) {
+        }
         try {
             ctr = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
             ctr.setAccessible(true);
@@ -72,9 +78,6 @@ public final class PluginCommands {
                 knownCommands = SimpleCommandMap.class.getDeclaredField("knownCommands");
                 knownCommands.setAccessible(true);
             }
-            getPluginMeta = MethodHandles.lookup().unreflect(
-                    JavaPlugin.class.getDeclaredMethod("getPluginMeta")
-            );
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
             throw new IllegalStateException("Unable to access PluginCommand(String, Plugin) construtor!");
