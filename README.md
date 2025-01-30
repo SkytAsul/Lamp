@@ -185,4 +185,5 @@ Huge thanks to those who donated! 😄
 - Demeng ($50)
 - creatorfromhell ($10)
 - Azoraqua ($10)
+- SuperMax_8 ($8)
 - Bed-dev ($6)
