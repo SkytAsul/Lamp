@@ -10,6 +10,6 @@ public final class TestPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         Lamp<BukkitCommandActor> lamp = BukkitLamp.builder(this).build();
-        lamp.register(new GreetCommands());
+        lamp.register(new GreetCommands(), new TeamCommands());
     }
 }
