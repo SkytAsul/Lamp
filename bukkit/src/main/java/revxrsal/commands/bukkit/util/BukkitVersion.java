@@ -4,7 +4,9 @@ import lombok.SneakyThrows;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import static revxrsal.commands.util.Classes.isClassPresent;
@@ -133,12 +135,19 @@ public final class BukkitVersion {
      * Returns the NMS class with the given name. The name must not contain
      * the net.minecraft.server prefix.
      */
-    @SneakyThrows
-    public static @NotNull Class<?> findNmsClass(@NotNull String name) {
-        if (supports(1, UNVERSION_NMS)) {
-            return Class.forName("net.minecraft.server." + name);
+    public static @NotNull Class<?> findNmsClass(@NotNull String... names) {
+        for (String name : names) {
+            Class<?> c = classOrNull("net.minecraft.server." + name);
+            if (c != null)
+                return c;
+            c = classOrNull("net.minecraft.server." + VERSION + "." + name);
+            if (c != null)
+                return c;
+            c = classOrNull("net.minecraft." + name);
+            if (c != null)
+                return c;
         }
-        return Class.forName("net.minecraft.server." + VERSION + "." + name);
+        throw new IllegalStateException("Class not found. Names searched: " + Arrays.toString(names) + ".");
     }
 
     /**
@@ -181,5 +190,13 @@ public final class BukkitVersion {
             return isPaper();
         else
             return supports(1, 13);
+    }
+
+    private static @Nullable Class<?> classOrNull(@NotNull String name) {
+        try {
+            return Class.forName(name);
+        } catch (Throwable t) {
+            return null;
+        }
     }
 }

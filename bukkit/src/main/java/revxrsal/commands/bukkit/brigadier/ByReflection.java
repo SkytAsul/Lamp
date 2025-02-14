@@ -74,18 +74,11 @@ final class ByReflection<A extends BukkitCommandActor> implements BukkitBrigadie
 
     static {
         try {
-            Class<?> minecraftServer;
-            Class<?> commandDispatcher;
-
-            if (BukkitVersion.supports(1, 16)) {
-                minecraftServer = BukkitVersion.findNmsClass("server.MinecraftServer");
-                commandDispatcher = BukkitVersion.findNmsClass("commands.CommandDispatcher");
-            } else {
-                minecraftServer = BukkitVersion.findNmsClass("MinecraftServer");
-                commandDispatcher = BukkitVersion.findNmsClass("CommandDispatcher");
-            }
+            Class<?> minecraftServer = BukkitVersion.findNmsClass("server.MinecraftServer", "MinecraftServer");
+            Class<?> commandDispatcher = BukkitVersion.findNmsClass("commands.CommandDispatcher", "command.CommandDispatcher", "CommandDispatcher");
 
             Class<?> craftServer = BukkitVersion.findOcbClass("CraftServer");
+
             CONSOLE_FIELD = craftServer.getDeclaredField("console");
             CONSOLE_FIELD.setAccessible(true);
 

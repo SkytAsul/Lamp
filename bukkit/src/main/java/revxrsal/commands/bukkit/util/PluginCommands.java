@@ -131,10 +131,10 @@ public final class PluginCommands {
 
     public static @Nullable PluginCommand getCommand(@NotNull JavaPlugin plugin, @NotNull String name) {
         @Nullable Object meta = getPluginMetaOrNull(plugin);
-        if (!(meta instanceof PluginDescriptionFile)) {
-            return null;
+        if (meta == null || meta instanceof PluginDescriptionFile) {
+            return plugin.getCommand(name);
         }
-        return plugin.getCommand(name);
+        return null;
     }
 
     @SneakyThrows private static @Nullable Object getPluginMetaOrNull(@NotNull JavaPlugin plugin) {
@@ -142,5 +142,4 @@ public final class PluginCommands {
             return null;
         return GET_PLUGIN_META.invoke(plugin);
     }
-
 }
