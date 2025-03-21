@@ -23,6 +23,7 @@
  */
 package revxrsal.commands.minestom.util;
 
+import net.minestom.server.command.ArgumentParserType;
 import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException;
@@ -77,7 +78,7 @@ public final class ArgumentRenamer {
         }
 
         @Override
-        public String parser() {
+        public ArgumentParserType parser() {
             return argument.parser();
         }
 

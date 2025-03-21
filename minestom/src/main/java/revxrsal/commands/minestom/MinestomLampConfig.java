@@ -83,7 +83,6 @@ public final class MinestomLampConfig<A extends MinestomCommandActor> implements
                 .accept(minestomSenderResolver())
                 .accept(minestomParameterTypes())
                 .accept(minestomExceptionHandler())
-                .accept(minestomPermissions())
                 .accept(registrationHooks(actorFactory, argumentTypes))
                 .accept(minestomContextParameters());
     }

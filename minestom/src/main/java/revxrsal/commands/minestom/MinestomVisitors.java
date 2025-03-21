@@ -42,14 +42,12 @@ import revxrsal.commands.command.CommandActor;
 import revxrsal.commands.exception.CommandExceptionHandler;
 import revxrsal.commands.minestom.actor.ActorFactory;
 import revxrsal.commands.minestom.actor.MinestomCommandActor;
-import revxrsal.commands.minestom.annotation.CommandPermission;
 import revxrsal.commands.minestom.argument.ArgumentTypes;
 import revxrsal.commands.minestom.argument.MinestomArgumentTypes;
 import revxrsal.commands.minestom.exception.MinestomExceptionHandler;
 import revxrsal.commands.minestom.hooks.MinestomCommandHooks;
 import revxrsal.commands.minestom.parameters.InstanceParameterType;
 import revxrsal.commands.minestom.parameters.PlayerParameterType;
-import revxrsal.commands.minestom.sender.MinestomPermissionFactory;
 import revxrsal.commands.minestom.sender.MinestomSenderResolver;
 
 import static revxrsal.commands.minestom.MinestomStubParameterType.stubParameterType;
@@ -179,15 +177,5 @@ public final class MinestomVisitors {
             builder.parameterTypes().addContextParameterLast(Server.class, (a, b) -> MinecraftServer.getServer());
             builder.parameterTypes().addContextParameterLast(InstanceManager.class, (a, b) -> MinecraftServer.getInstanceManager());
         };
-    }
-
-    /**
-     * Adds support for the {@link CommandPermission} annotation
-     *
-     * @param <A> The actor type
-     * @return This visitor
-     */
-    public static <A extends MinestomCommandActor> @NotNull LampBuilderVisitor<A> minestomPermissions() {
-        return builder -> builder.permissionFactory(MinestomPermissionFactory.INSTANCE);
     }
 }
