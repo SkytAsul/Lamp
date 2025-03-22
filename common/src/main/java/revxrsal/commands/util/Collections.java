@@ -149,6 +149,16 @@ public final class Collections {
         return list;
     }
 
+    @Contract(pure = true)
+    @CheckReturnValue
+    public static @NotNull <U, T> List<T> map(@NotNull U[] iterator, @NotNull Function<U, T> fn) {
+        List<T> list = new ArrayList<>();
+        for (U u : iterator) {
+            list.add(fn.apply(u));
+        }
+        return list;
+    }
+
     public static <T> boolean any(@NotNull Iterable<T> iterator, Predicate<T> predicate) {
         for (T t : iterator) {
             if (predicate.test(t))

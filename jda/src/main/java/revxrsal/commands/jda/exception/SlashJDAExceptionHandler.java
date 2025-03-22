@@ -23,16 +23,15 @@
  */
 package revxrsal.commands.jda.exception;
 
+import net.dv8tion.jda.api.utils.MarkdownUtil;
 import org.jetbrains.annotations.NotNull;
-import revxrsal.commands.exception.CommandInvocationException;
-import revxrsal.commands.exception.DefaultExceptionHandler;
-import revxrsal.commands.exception.InvalidHelpPageException;
-import revxrsal.commands.exception.NoPermissionException;
+import revxrsal.commands.exception.*;
 import revxrsal.commands.jda.actor.SlashCommandActor;
 
 import java.util.Locale;
 
 import static revxrsal.commands.util.BuiltInNamingStrategies.separateCamelCase;
+import static revxrsal.commands.util.Collections.map;
 
 public class SlashJDAExceptionHandler<A extends SlashCommandActor> extends DefaultExceptionHandler<A> {
 
@@ -65,8 +64,13 @@ public class SlashJDAExceptionHandler<A extends SlashCommandActor> extends Defau
     }
 
     @HandleException
-    public void onInvalidCategory(InvalidCategoryException e, SlashCommandActor actor) {
+    public void onInvalidCategory(InvalidCategoryException e, A actor) {
         actor.error("**Invalid role:** " + e.input());
+    }
+
+    @Override public void onValueNotAllowed(@NotNull ValueNotAllowedException e, @NotNull A actor) {
+        String allowedValues = String.join(", ", map(e.allowedValues(), MarkdownUtil::bold));
+        actor.error("🛑 Received an invalid value: " + MarkdownUtil.bold(e.input()) + ". Allowed values: " + allowedValues + ".");
     }
 
     @Override

@@ -119,6 +119,11 @@ public class MinestomExceptionHandler extends DefaultExceptionHandler<MinestomCo
         e.cause().printStackTrace();
     }
 
+    @Override public void onValueNotAllowed(@NotNull ValueNotAllowedException e, @NotNull MinestomCommandActor actor) {
+        String allowedValues = String.join("&c, &e", e.allowedValues());
+        actor.error(legacyColorize("Received an invalid value: &e" + e.input() + "&c. Allowed values: &e" + allowedValues + "&c."));
+    }
+
     @Override public void onUnknownCommand(@NotNull UnknownCommandException e, @NotNull MinestomCommandActor actor) {
         actor.error(legacyColorize("&cUnknown command: &e" + e.input() + "&c."));
     }

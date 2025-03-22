@@ -146,6 +146,12 @@ public class DefaultExceptionHandler<A extends CommandActor> extends RuntimeExce
     }
 
     @HandleException
+    public void onValueNotAllowed(@NotNull ValueNotAllowedException e, @NotNull A actor) {
+        String allowedValues = String.join(", ", e.allowedValues());
+        actor.error("Received an invalid value: " + e.input() + ". Allowed values: " + allowedValues);
+    }
+
+    @HandleException
     public void onSendable(@NotNull SendableException e, @NotNull A actor) {
         e.sendTo(actor);
     }
