@@ -74,6 +74,7 @@ public final class ParameterTypes<A extends CommandActor> {
             ListParameterTypeFactory.INSTANCE,
             SetParameterTypeFactory.INSTANCE,
             EnumParameterTypeFactory.INSTANCE,
+            ValuesParameterTypeFactory.INSTANCE,
             OptionalParameterTypeFactory.INSTANCE,
             ParameterType.Factory.forType(int.class, new IntParameterType()),
             ParameterType.Factory.forType(double.class, new DoubleParameterType()),
