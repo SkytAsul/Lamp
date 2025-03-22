@@ -64,7 +64,9 @@ public enum ValuesParameterTypeFactory implements ParameterType.Factory<CommandA
                 @SuppressWarnings("unchecked")
                 T value = (T) delegate.parse(input, context);
                 int end = input.position();
+                input.setPosition(start);
                 String consumed = input.peek(end - start);
+                input.setPosition(end);
 
                 if ((values.caseSensitive() && allowed.contains(consumed))
                         || (!values.caseSensitive() && allowed.contains(consumed.toUpperCase())))

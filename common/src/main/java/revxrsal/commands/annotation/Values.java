@@ -2,6 +2,11 @@ package revxrsal.commands.annotation;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * A utility annotation that marks a field as <em>only</em> accepting certain
  * values. This will take care of validation, tab-completion and errors.
@@ -13,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * Values can be of any type, including strings, integers, enums, etc.
  */
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Values {
 
     /**
