@@ -125,7 +125,7 @@ public final class BukkitLampConfig<A extends BukkitCommandActor> implements Lam
         private String fallbackPrefix;
         private Optional<BukkitAudiences> audiences;
         private @Nullable MessageSender<A, ComponentLike> messageSender;
-        private boolean disableAsyncCompletion;
+        private boolean disableAsyncCompletion = true;
 
         Builder(@NotNull JavaPlugin plugin) {
             this.plugin = plugin;
@@ -176,12 +176,21 @@ public final class BukkitLampConfig<A extends BukkitCommandActor> implements Lam
         }
 
         /**
-         * Disables brigadier integration
+         * Disables async completion (Paper only)
          *
          * @return This builder
          */
         public @NotNull Builder<A> disableAsyncCompletion() {
             return disableAsyncCompletion(true);
+        }
+
+        /**
+         * Enables async completion (Paper only)
+         *
+         * @return This builder
+         */
+        public @NotNull Builder<A> enableAsyncCompletion() {
+            return disableAsyncCompletion(false);
         }
 
         /**
