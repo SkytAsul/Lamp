@@ -5,9 +5,12 @@ import org.jetbrains.annotations.Unmodifiable;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.command.CommandActor;
 import revxrsal.commands.command.Potential;
+import revxrsal.commands.exception.NoPermissionException;
 import revxrsal.commands.stream.StringStream;
 
 import java.util.List;
+
+import static revxrsal.commands.util.Collections.any;
 
 /**
  * The default failure handler. This can be overridden in {@link DispatcherSettings}
@@ -29,7 +32,14 @@ final class DefaultFailureHandler<A extends CommandActor> implements FailureHand
 
     @Override
     public void handleFailedAttempts(@NotNull A actor, @NotNull @Unmodifiable List<Potential<A>> failedAttempts, @NotNull StringStream input) {
+        if (failedAttempts.isEmpty()) {
+            return;
+        }
         if (failedAttempts.size() == 1) {
+            failedAttempts.get(0).handleException();
+            return;
+        }
+        if (failedAttempts.get(0).error() instanceof NoPermissionException) {
             failedAttempts.get(0).handleException();
             return;
         }
