@@ -138,15 +138,12 @@ public final class BrigadierParser<S, A extends CommandActor> {
             }
             if (parameter.isSwitch()) {
                 BNode<S> ofSwitch = ofSwitch(parameter);
-                if (!addOptionalsTo.isEmpty()) {
-                    addOptionalsTo.forEach(genNode -> {
-                        genNode.then(ofSwitch);
-                        genNode.executes(createAction(command));
-                    });
-                } else {
-                    lastNode.then(ofSwitch);
-                    lastNode.executes(createAction(command));
-                }
+                addOptionalsTo.forEach(genNode -> {
+                    genNode.then(ofSwitch);
+                    genNode.executes(createAction(command));
+                });
+                lastNode.then(ofSwitch);
+                lastNode.executes(createAction(command));
                 addOptionalsTo.add(ofSwitch);
             } else if (parameter.isFlag()) {
                 BNode<S> ofFlag = ofFlag(parameter);
