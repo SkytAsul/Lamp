@@ -79,6 +79,10 @@ public enum ValuesParameterTypeFactory implements ParameterType.Factory<CommandA
             @Override public @NotNull SuggestionProvider<@NotNull CommandActor> defaultSuggestions() {
                 return SuggestionProvider.of(values.value());
             }
+
+            @Override public @NotNull PrioritySpec parsePriority() {
+                return PrioritySpec.highest();
+            }
         };
     }
 }
