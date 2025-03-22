@@ -10,7 +10,7 @@ repositories {
 
 dependencies {
     implementation(project(":common"))
-    compileOnly("net.minestom:minestom-snapshots:7ce047b22e")
+    compileOnly("net.minestom:minestom-snapshots:39d445482f")
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))
