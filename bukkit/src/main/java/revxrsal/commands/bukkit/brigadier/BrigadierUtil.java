@@ -56,8 +56,8 @@ final class BrigadierUtil {
     static {
         try {
             Class<?> commandListenerWrapper = BukkitVersion.findNmsClass(
-                    "commands.CommandListenerWrapper",
                     "commands.CommandSourceStack",
+                    "commands.CommandListenerWrapper",
                     "command.CommandListenerWrapper",
                     "CommandListenerWrapper"
             );
