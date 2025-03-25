@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.LampBuilderVisitor;
@@ -67,7 +68,14 @@ public final class JDAVisitors {
             for (ExecutableCommand<A> child : lamp.registry().commands()) {
                 parser.parse(child);
             }
-            jda.updateCommands().addCommands(parser.commands().values()).queue();
+            jda.retrieveCommands().queue(existingCommands -> {
+                existingCommands.forEach(existingCommand -> {
+                    if (existingCommand.getType() == Command.Type.SLASH) {
+                        jda.deleteCommandById(existingCommand.getId()).queue();
+                    }
+                });
+            });
+            parser.commands().values().forEach(newCommand -> jda.upsertCommand(newCommand).queue());
             jda.addEventListener(new JDASlashListener<>(lamp, actorFactory));
         };
     }
