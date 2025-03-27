@@ -16,7 +16,7 @@ plugins {
 }
 
 group = "io.github.revxrsal"
-version = "4.0.0-rc.10"
+version = "4.0.0-rc.11"
 
 java {
     toolchain {
