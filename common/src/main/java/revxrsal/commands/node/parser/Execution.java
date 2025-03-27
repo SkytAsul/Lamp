@@ -25,6 +25,7 @@ package revxrsal.commands.node.parser;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 import org.jetbrains.annotations.Unmodifiable;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.annotation.CommandPriority;
@@ -58,7 +59,7 @@ final class Execution<A extends CommandActor> implements ExecutableCommand<A> {
     private final OptionalInt priority;
     private final String siblingPath;
     private final String path;
-    private final boolean containsFlags;
+    private final int flagCount;
     private final boolean lowPriority;
     private int optionalParameters, requiredInput;
 
@@ -82,7 +83,7 @@ final class Execution<A extends CommandActor> implements ExecutableCommand<A> {
         this.priority = function.annotations()
                 .mapOr(CommandPriority.class, c -> OptionalInt.of(c.value()), OptionalInt.empty());
         this.siblingPath = computeSiblingPath();
-        this.containsFlags = any(nodes, n -> n instanceof ParameterNode<?, ?> && (((ParameterNode<?, ?>) n).isFlag() || ((ParameterNode<?, ?>) n).isSwitch()));
+        this.flagCount = count(nodes, n -> n instanceof ParameterNode<?, ?> && (((ParameterNode<?, ?>) n).isFlag() || ((ParameterNode<?, ?>) n).isSwitch()));
         this.lowPriority = function.annotations().contains(CommandPriority.Low.class);
         if (lowPriority && priority.isPresent()) {
             throw new IllegalArgumentException("You cannot have @CommandPriority and @CommandPriority.Low on the same function!");
@@ -259,7 +260,7 @@ final class Execution<A extends CommandActor> implements ExecutableCommand<A> {
     }
 
     @Override public boolean containsFlags() {
-        return containsFlags;
+        return flagCount > 0;
     }
 
     @Override
@@ -275,6 +276,10 @@ final class Execution<A extends CommandActor> implements ExecutableCommand<A> {
     @Override
     public @Nullable String description() {
         return description;
+    }
+
+    @Override public @Range(from = 0, to = Integer.MAX_VALUE) int flagCount() {
+        return flagCount;
     }
 
     @Override
@@ -337,7 +342,7 @@ final class Execution<A extends CommandActor> implements ExecutableCommand<A> {
         }
 
         private boolean test() {
-            if (execution.containsFlags) {
+            if (execution.flagCount > 0) {
                 MutableStringStream original = input.toMutableCopy();
                 if (!tryParseFlags()) {
                     input = original;

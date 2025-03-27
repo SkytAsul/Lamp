@@ -167,6 +167,15 @@ public final class Collections {
         return false;
     }
 
+    public static <T> int count(@NotNull Iterable<T> iterator, Predicate<T> predicate) {
+        int i = 0;
+        for (T t : iterator) {
+            if (predicate.test(t))
+                i++;
+        }
+        return i;
+    }
+
     public static @NotNull <U, T> LinkedList<T> mapToLinkedList(@NotNull Iterable<U> iterator, @NotNull Function<U, T> fn) {
         LinkedList<T> list = new LinkedList<>();
         for (U u : iterator) {

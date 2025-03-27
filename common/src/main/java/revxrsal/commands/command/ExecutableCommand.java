@@ -368,4 +368,13 @@ public interface ExecutableCommand<A extends CommandActor> extends Comparable<Ex
      * @return if the command contains {@link Flag} or {@link Switch}
      */
     boolean containsFlags();
+
+    /**
+     * Returns the number of parameters that are {@link Switch}es or {@link Flag}s
+     * in this command
+     *
+     * @return The number of switches and flags
+     */
+    @Range(from = 0, to = Integer.MAX_VALUE) int flagCount();
+
 }
