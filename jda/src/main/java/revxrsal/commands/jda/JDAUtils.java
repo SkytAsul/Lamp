@@ -329,11 +329,7 @@ public final class JDAUtils {
             return OptionType.USER;
         if (Message.Attachment.class.isAssignableFrom(type))
             return OptionType.ATTACHMENT;
-        if (TextChannel.class.isAssignableFrom(type)
-                || VoiceChannel.class.isAssignableFrom(type)
-                || StageChannel.class.isAssignableFrom(type)
-                || NewsChannel.class.isAssignableFrom(type)
-        )
+        if (Channel.class.isAssignableFrom(type))
             return OptionType.CHANNEL;
         if (Role.class.isAssignableFrom(type))
             return OptionType.ROLE;
