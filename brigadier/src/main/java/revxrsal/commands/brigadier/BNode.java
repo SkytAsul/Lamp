@@ -89,4 +89,8 @@ final class BNode<S> {
     @NotNull BNode<S> nextChild() {
         return of(node.getChildren().iterator().next());
     }
+
+    @Override public String toString() {
+        return "BNode(" + node + ")";
+    }
 }
