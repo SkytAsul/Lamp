@@ -1,4 +1,4 @@
-/*
+ /*
  * This file is part of lamp, licensed under the MIT License.
  *
  *  Copyright (c) Revxrsal <reflxction.github@gmail.com>
@@ -245,5 +245,9 @@ final class ParameterNodeImpl<A extends CommandActor, T> extends BaseCommandNode
 
     @Override public boolean isFlag() {
         return flagAnn != null;
+    }
+
+    @Override public String toString() {
+        return "ParameterNode(name=" + name() + ')';
     }
 }
