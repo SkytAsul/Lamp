@@ -42,11 +42,13 @@ import revxrsal.commands.stream.MutableStringStream;
 import revxrsal.commands.stream.StringStream;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
 import static revxrsal.commands.node.DispatcherSettings.LONG_FORMAT_PREFIX;
+import static revxrsal.commands.util.Collections.filter;
 import static revxrsal.commands.util.Strings.stripNamespace;
 
 public final class BrigadierParser<S, A extends CommandActor> {
@@ -131,11 +133,43 @@ public final class BrigadierParser<S, A extends CommandActor> {
             lastNode.executes(createAction(command));
             return (LiteralCommandNode<S>) firstNode.asBrigadierNode();
         }
-        List<BNode<S>> addOptionalsTo = new ArrayList<>();
-        for (ParameterNode<A, Object> parameter : command.parameters().values()) {
-            if (!parameter.isFlag() && !parameter.isSwitch()) {
-                continue;
+
+        List<ParameterNode<A, Object>> flags = filter(command.parameters().values(), v -> v.isFlag() || v.isSwitch());
+        if (command.flagCount() <= 4) { // An arbitrary limit that is a good balance between a large tree and a beautiful one
+            List<RootCommandNode<S>> roots = new ArrayList<>();
+            for (List<ParameterNode<A, Object>> p : generatePermutations(flags)) {
+                RootCommandNode<S> root = new RootCommandNode<>();
+                roots.add(root);
+                BNode<S> thisNode = BNode.of(root);
+                for (ParameterNode<A, Object> parameter : p) {
+                    if (parameter.isSwitch()) {
+                        BNode<S> ofSwitch = ofSwitch(parameter);
+                        thisNode.then(ofSwitch);
+                        thisNode.executes(createAction(command));
+
+                        thisNode = ofSwitch;
+                    } else {
+                        BNode<S> ofFlag = ofFlag(parameter);
+                        thisNode.then(ofFlag);
+
+                        if (parameter.isOptional()) {
+                            thisNode.executes(createAction(command));
+                        }
+
+                        thisNode = ofFlag.nextChild();
+                    }
+                }
+                thisNode.executes(createAction(command));
             }
+            for (RootCommandNode<S> root : roots) {
+                for (CommandNode<S> child : root.getChildren()) {
+                    lastNode.then(child);
+                }
+            }
+            return (LiteralCommandNode<S>) firstNode.asBrigadierNode();
+        }
+        List<BNode<S>> addOptionalsTo = new ArrayList<>();
+        for (ParameterNode<A, Object> parameter : flags) {
             if (parameter.isSwitch()) {
                 BNode<S> ofSwitch = ofSwitch(parameter);
                 addOptionalsTo.forEach(genNode -> {
@@ -263,4 +297,46 @@ public final class BrigadierParser<S, A extends CommandActor> {
         return BrigadierAdapter.createSuggestionProvider(parameter, converter);
     }
 
+    private List<List<ParameterNode<A, Object>>> generatePermutations(List<ParameterNode<A, Object>> list) {
+        List<ParameterNode<A, Object>> required = new ArrayList<>();
+        List<ParameterNode<A, Object>> optional = new ArrayList<>();
+
+        for (ParameterNode<A, Object> node : list) {
+            if (node.isRequired()) {
+                required.add(node);
+            } else {
+                optional.add(node);
+            }
+        }
+
+        List<List<ParameterNode<A, Object>>> truePermutations = new ArrayList<>();
+        List<List<ParameterNode<A, Object>>> falsePermutations = new ArrayList<>();
+
+        permute(required, 0, truePermutations);
+        permute(optional, 0, falsePermutations);
+
+        List<List<ParameterNode<A, Object>>> result = new ArrayList<>();
+
+        for (List<ParameterNode<A, Object>> tp : truePermutations) {
+            for (List<ParameterNode<A, Object>> fp : falsePermutations) {
+                List<ParameterNode<A, Object>> combined = new ArrayList<>(tp);
+                combined.addAll(fp);
+                result.add(combined);
+            }
+        }
+
+        return result;
+    }
+
+    private void permute(List<ParameterNode<A, Object>> list, int start, List<List<ParameterNode<A, Object>>> result) {
+        if (start == list.size()) {
+            result.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = start; i < list.size(); i++) {
+            Collections.swap(list, start, i);
+            permute(list, start + 1, result);
+            Collections.swap(list, start, i);
+        }
+    }
 }
