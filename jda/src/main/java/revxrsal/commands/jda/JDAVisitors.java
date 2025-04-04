@@ -42,7 +42,13 @@ import revxrsal.commands.jda.exception.SlashJDAExceptionHandler;
 import revxrsal.commands.jda.sender.JDASenderResolver;
 import revxrsal.commands.jda.slash.JDAParser;
 import revxrsal.commands.jda.slash.JDASlashListener;
+import revxrsal.commands.node.ExecutionContext;
+import revxrsal.commands.parameter.ParameterType;
 import revxrsal.commands.process.SenderResolver;
+import revxrsal.commands.stream.MutableStringStream;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static revxrsal.commands.jda.parameters.SnowflakeParameterTypes.*;
 
@@ -55,6 +61,7 @@ import static revxrsal.commands.jda.parameters.SnowflakeParameterTypes.*;
 public final class JDAVisitors {
 
     /**
+     * `
      * Instructs Lamp to send all the currently registered commands to Discord
      *
      * @param actorFactory The actor factory. This allows for supplying custom implementations
@@ -68,14 +75,18 @@ public final class JDAVisitors {
             for (ExecutableCommand<A> child : lamp.registry().commands()) {
                 parser.parse(child);
             }
-            jda.retrieveCommands().queue(existingCommands -> {
-                existingCommands.forEach(existingCommand -> {
+            CompletableFuture<List<Command>> existingCommands = jda.retrieveCommands().submit();
+            existingCommands.thenAccept(commands -> {
+                commands.forEach(existingCommand -> {
                     if (existingCommand.getType() == Command.Type.SLASH) {
-                        jda.deleteCommandById(existingCommand.getId()).queue();
+                        jda.deleteCommandById(existingCommand.getId()).queue(); // Queue it for async deletion
                     }
                 });
+
+                parser.commands().values().forEach(newCommand ->
+                        jda.upsertCommand(newCommand).queue() // Queue the upsert command without blocking
+                );
             });
-            parser.commands().values().forEach(newCommand -> jda.upsertCommand(newCommand).queue());
             jda.addEventListener(new JDASlashListener<>(lamp, actorFactory));
         };
     }
@@ -183,9 +194,16 @@ public final class JDAVisitors {
                 .addParameterTypeLast(StageChannel.class, stageChannel())
                 .addParameterTypeLast(ThreadChannel.class, threadChannel())
                 .addParameterTypeLast(NewsChannel.class, newsChannel())
+                .addParameterTypeLast(Message.Attachment.class, stub())
+                .addParameterTypeLast(IMentionable.class, stub())
                 .addParameterTypeLast(ScheduledEvent.class, scheduledEvent())
                 .addParameterTypeLast(Emoji.class, emoji())
                 .addParameterTypeLast(Category.class, category());
+    }
+
+    private static @NotNull <A extends SlashCommandActor, T> ParameterType<? super A, T> stub() {
+        //noinspection unchecked
+        return (ParameterType<? super A, T>) StubParameterType.STUB;
     }
 
     /**
@@ -197,5 +215,16 @@ public final class JDAVisitors {
      */
     public static <A extends SlashCommandActor> @NotNull LampBuilderVisitor<A> jdaExceptionHandler() {
         return builder -> builder.exceptionHandler(new SlashJDAExceptionHandler<>());
+    }
+
+    private static class StubParameterType<A extends SlashCommandActor, T> implements ParameterType<A, T> {
+        public static final StubParameterType<SlashCommandActor, Object> STUB = new StubParameterType<>();
+
+        @Override
+        public T parse(@NotNull MutableStringStream input, @NotNull ExecutionContext<@NotNull A> context) {
+            throw new UnsupportedOperationException("Stub! This parameter is resolved using JDA's slash command options, " +
+                    "and does not follow traditional parameter resolving. This ParameterType exists solely to tell Lamp that " +
+                    "this is resolved by JDA beforehand");
+        }
     }
 }
