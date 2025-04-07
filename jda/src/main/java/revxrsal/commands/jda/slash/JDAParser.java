@@ -36,6 +36,7 @@ import revxrsal.commands.jda.actor.SlashCommandActor;
 import revxrsal.commands.jda.annotation.CommandPermission;
 import revxrsal.commands.jda.annotation.GuildOnly;
 import revxrsal.commands.jda.annotation.NSFW;
+import revxrsal.commands.jda.annotation.RenameFrom;
 import revxrsal.commands.node.CommandNode;
 import revxrsal.commands.node.ParameterNode;
 
@@ -47,6 +48,7 @@ import static revxrsal.commands.jda.JDAUtils.toOptionData;
 public final class JDAParser<A extends SlashCommandActor> {
 
     private final Map<String, SlashCommandData> commands = new HashMap<>();
+    private final Map<String, String> renamedCommands = new HashMap<>();
 
     public void parse(@NotNull ExecutableCommand<A> executable) {
         checkCommand(executable);
@@ -56,6 +58,11 @@ public final class JDAParser<A extends SlashCommandActor> {
         SlashCommandData slash = slash(name, description);
         slash.setNSFW(executable.annotations().contains(NSFW.class));
         slash.setGuildOnly(executable.annotations().contains(GuildOnly.class));
+
+        String renameFrom = executable.annotations().map(RenameFrom.class, RenameFrom::value);
+        if (renameFrom != null)
+            renamedCommands.put(renameFrom, name);
+
         Permission[] permissions = executable.annotations().map(CommandPermission.class, CommandPermission::value);
         if (permissions != null)
             slash.setDefaultPermissions(DefaultMemberPermissions.enabledFor(permissions));
@@ -129,5 +136,9 @@ public final class JDAParser<A extends SlashCommandActor> {
 
     public @NotNull Map<String, SlashCommandData> commands() {
         return commands;
+    }
+
+    public Map<String, String> renamedCommands() {
+        return renamedCommands;
     }
 }

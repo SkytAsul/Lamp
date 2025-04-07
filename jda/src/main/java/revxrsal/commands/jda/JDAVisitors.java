@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.jetbrains.annotations.NotNull;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.LampBuilderVisitor;
@@ -47,8 +48,8 @@ import revxrsal.commands.parameter.ParameterType;
 import revxrsal.commands.process.SenderResolver;
 import revxrsal.commands.stream.MutableStringStream;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.HashMap;
+import java.util.Map;
 
 import static revxrsal.commands.jda.parameters.SnowflakeParameterTypes.*;
 
@@ -75,16 +76,31 @@ public final class JDAVisitors {
             for (ExecutableCommand<A> child : lamp.registry().commands()) {
                 parser.parse(child);
             }
-            CompletableFuture<List<Command>> existingCommands = jda.retrieveCommands().submit();
-            existingCommands.thenAccept(commands -> {
-                commands.forEach(existingCommand -> {
-                    if (existingCommand.getType() == Command.Type.SLASH) {
-                        jda.deleteCommandById(existingCommand.getId()).queue(); // Queue it for async deletion
-                    }
-                });
+            jda.retrieveCommands().submit().thenAccept(commands -> {
+                Map<String, SlashCommandData> notRegistered = new HashMap<>(parser.commands());
 
-                parser.commands().values().forEach(newCommand ->
-                        jda.upsertCommand(newCommand).queue() // Queue the upsert command without blocking
+                for (Command command : commands) {
+                    if (command.getType() != Command.Type.SLASH)
+                        continue;
+                    SlashCommandData data = notRegistered.remove(command.getName());
+                    if (data == null) {
+                        String rename = parser.renamedCommands().get(command.getName());
+                        if (rename != null) {
+                            SlashCommandData renamedData = parser.commands().get(rename);
+                            if (renamedData != null) {
+                                jda.editCommandById(command.getId()).apply(renamedData).queue();
+                                notRegistered.remove(rename);
+                            }
+                        } else {
+                            // no longer exists
+                            command.delete().queue();
+                        }
+                    } else {
+                        jda.editCommandById(command.getId()).apply(data).queue();
+                    }
+                }
+                notRegistered.values().forEach(newCommand ->
+                        jda.upsertCommand(newCommand).queue()
                 );
             });
             jda.addEventListener(new JDASlashListener<>(lamp, actorFactory));
