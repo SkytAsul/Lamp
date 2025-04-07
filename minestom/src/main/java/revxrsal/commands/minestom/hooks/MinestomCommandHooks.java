@@ -51,10 +51,12 @@ import revxrsal.commands.node.*;
 import revxrsal.commands.parameter.ParameterType;
 import revxrsal.commands.stream.MutableStringStream;
 import revxrsal.commands.stream.StringStream;
+import revxrsal.commands.util.Permutations;
 
 import java.util.*;
 
 import static revxrsal.commands.minestom.util.MinestomUtils.readIntoLampContext;
+import static revxrsal.commands.util.Collections.filter;
 
 public final class MinestomCommandHooks<A extends MinestomCommandActor> implements CommandRegisteredHook<A> {
 
@@ -98,43 +100,82 @@ public final class MinestomCommandHooks<A extends MinestomCommandActor> implemen
             });
         } else {
             List<Argument<?>> arguments = new ArrayList<>();
-            List<ArgumentColl> addedOptionals = new ArrayList<>();
-            for (int i = 1; i < command.nodes().size(); i++) {
-                CommandNode<A> node = command.nodes().get(i);
-                if (node.isLiteral()) {
-                    usedLiterals.add(node.name());
-                } else if (usedLiterals.contains(node.name())) {
-                    throw new IllegalArgumentException("You cannot have an argument named '" + node.name() + "' because it is used in the literal command path. " +
-                            "Pick a different name!");
-                }
+            if (!command.containsFlags() || command.flagCount() > 4) {
+                List<ArgumentColl> addedOptionals = new ArrayList<>();
+                for (int i = 1; i < command.nodes().size(); i++) {
+                    CommandNode<A> node = command.nodes().get(i);
+                    if (node.isLiteral()) {
+                        usedLiterals.add(node.name());
+                    } else if (usedLiterals.contains(node.name())) {
+                        throw new IllegalArgumentException("You cannot have an argument named '" + node.name() + "' because it is used in the literal command path. " +
+                                "Pick a different name!");
+                    }
 
-                if (node.isLiteral())
-                    arguments.add(toArgument(node));
-                else if (node instanceof ParameterNode<A, ?> parameter) {
-                    if (parameter.isSwitch()) {
-                        // add the required
-                        minestomCommand.addSyntax(generateAction(command), arguments.toArray(Argument[]::new));
-
-                        // add it to the required and then add that.
-                        ArgumentColl sw = ofSwitch(parameter);
-                        addedOptionals.add(sw);
-                    } else if (parameter.isFlag()) {
-                        ArgumentColl argumentColl = ofFlag(parameter);
-                        if (parameter.isRequired()) {
-                            arguments.addAll(argumentColl.arguments());
-                        } else {
+                    if (node.isLiteral())
+                        arguments.add(toArgument(node));
+                    else if (node instanceof ParameterNode<A, ?> parameter) {
+                        if (parameter.isSwitch()) {
+                            // add the required
                             minestomCommand.addSyntax(generateAction(command), arguments.toArray(Argument[]::new));
 
-                            ArgumentColl flag = ofFlag(parameter);
-                            addedOptionals.add(flag);
+                            // add it to the required and then add that.
+                            ArgumentColl sw = ofSwitch(parameter);
+                            addedOptionals.add(sw);
+                        } else if (parameter.isFlag()) {
+                            ArgumentColl argumentColl = ofFlag(parameter);
+                            if (parameter.isRequired()) {
+                                arguments.addAll(argumentColl.arguments());
+                            } else {
+                                minestomCommand.addSyntax(generateAction(command), arguments.toArray(Argument[]::new));
+
+                                ArgumentColl flag = ofFlag(parameter);
+                                addedOptionals.add(flag);
+                            }
+                        } else {
+                            arguments.add(toArgument(node));
                         }
-                    } else {
+                    }
+                }
+                minestomCommand.addSyntax(generateAction(command), arguments.toArray(Argument[]::new));
+                addOptionalFlagsRecursively(command, minestomCommand, addedOptionals, arguments);
+            } else {
+                for (int i = 1; i < command.nodes().size(); i++) {
+                    CommandNode<A> node = command.nodes().get(i);
+                    if (node.isLiteral()) {
+                        usedLiterals.add(node.name());
+                    } else if (usedLiterals.contains(node.name())) {
+                        throw new IllegalArgumentException("You cannot have an argument named '" + node.name() + "' because it is used in the literal command path. " +
+                                "Pick a different name!");
+                    }
+
+                    if (node.isLiteral())
+                        arguments.add(toArgument(node));
+                    else if (node instanceof ParameterNode<A, ?> parameter) {
+                        if (parameter.isSwitch() || parameter.isFlag()) {
+                            continue;
+                        }
                         arguments.add(toArgument(node));
                     }
                 }
+
+                List<ParameterNode<A, Object>> flags = filter(command.parameters().values(), v -> v.isFlag() || v.isSwitch());
+                for (List<ParameterNode<A, Object>> permutation : Permutations.generatePermutations(flags)) {
+                    List<Argument<?>> path = new ArrayList<>(arguments.size() + permutation.size());
+                    path.addAll(arguments);
+                    for (ParameterNode<A, Object> parameter : permutation) {
+                        if (parameter.isSwitch()) {
+                            ArgumentColl sw = ofSwitch(parameter);
+                            path.addAll(sw.arguments());
+                        } else if (parameter.isFlag()) {
+                            ArgumentColl argumentColl = ofFlag(parameter);
+                            path.addAll(argumentColl.arguments());
+                        }
+                    }
+
+                    minestomCommand.addSyntax(generateAction(command), path.toArray(Argument[]::new));
+                }
+                // we have <= 4 flags, so we create all possible permutations
             }
-            minestomCommand.addSyntax(generateAction(command), arguments.toArray(Argument[]::new));
-            addOptionalFlagsRecursively(command, minestomCommand, addedOptionals, arguments);
         }
     }
 
