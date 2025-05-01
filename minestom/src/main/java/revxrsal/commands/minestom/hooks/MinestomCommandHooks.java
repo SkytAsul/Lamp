@@ -31,6 +31,7 @@ import net.minestom.server.command.builder.CommandExecutor;
 import net.minestom.server.command.builder.arguments.Argument;
 import net.minestom.server.command.builder.arguments.ArgumentLiteral;
 import net.minestom.server.command.builder.arguments.ArgumentType;
+import net.minestom.server.command.builder.condition.CommandCondition;
 import net.minestom.server.command.builder.exception.ArgumentSyntaxException;
 import net.minestom.server.command.builder.suggestion.SuggestionCallback;
 import net.minestom.server.command.builder.suggestion.SuggestionEntry;
@@ -77,6 +78,10 @@ public final class MinestomCommandHooks<A extends MinestomCommandActor> implemen
         String name = command.firstNode().name();
         Command minestomCommand = registeredRootNames.computeIfAbsent(name, k -> {
             Command c = new Command(k);
+            c.setCondition((sender, cmd) -> {
+                A actor = actorFactory.create(sender, command.lamp());
+                return command.permission().isExecutableBy(actor);
+            });
             MinecraftServer.getCommandManager().register(c);
             return c;
         });
