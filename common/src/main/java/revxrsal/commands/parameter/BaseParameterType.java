@@ -32,7 +32,6 @@ import revxrsal.commands.annotation.ParseWith;
  * the user inputs either a {@link ParameterType} or a {@link ParameterType.Factory} (enforcing
  * type-safety).
  */
-@ApiStatus.Internal
 @ApiStatus.NonExtendable
 public interface BaseParameterType {
 }

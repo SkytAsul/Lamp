@@ -30,7 +30,6 @@ import revxrsal.commands.annotation.SuggestWith;
  * Represents a common interface for {@link SuggestionProvider} and {@link SuggestionProvider.Factory}.
  * This is only used in {@link SuggestWith} to enforce type-safety.
  */
-@ApiStatus.Internal
 @ApiStatus.NonExtendable
 public interface BaseSuggestionProvider {
 }
