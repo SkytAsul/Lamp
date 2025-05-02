@@ -59,8 +59,10 @@ public final class BukkitArgumentTypes {
     @Contract(value = "-> new", pure = true)
     public static @NotNull <A extends CommandActor> ArgumentTypes.Builder<A> builder() {
         ArgumentTypes.Builder<A> builder = ArgumentTypes.builder();
+        MinecraftArgumentType.UUID.getIfPresent().ifPresent(uuid -> {
+            builder.addTypeLast(UUID.class, uuid);
+        });
         return builder
-                .addTypeLast(UUID.class, MinecraftArgumentType.UUID.get())
                 .addTypeLast(OfflinePlayer.class, SINGLE_PLAYER)
                 .addTypeLast(Player.class, SINGLE_PLAYER)
                 .addTypeLast(Entity.class, SINGLE_ENTITY)
