@@ -252,12 +252,14 @@ public final class BukkitLampConfig<A extends BukkitCommandActor> implements Lam
          */
         @Contract("-> new")
         public @NotNull BukkitLampConfig<A> build() {
-            //noinspection unchecked
-            this.actorFactory = (ActorFactory<A>) ActorFactory.defaultFactory(
-                    plugin,
-                    audiences,
-                    messageSender
-            );
+            if (this.actorFactory == null) {
+                //noinspection unchecked
+                this.actorFactory = (ActorFactory<A>) ActorFactory.defaultFactory(
+                        plugin,
+                        audiences,
+                        messageSender
+                );
+            }
             return new BukkitLampConfig<>(
                     this.actorFactory,
                     Lazy.of(() -> argumentTypes.get().build()),
