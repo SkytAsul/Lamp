@@ -58,17 +58,19 @@ public enum EnumParameterTypeFactory implements ParameterType.Factory<CommandAct
             byKeys.put(name, enumConstant);
             suggestions.add(name);
         }
-        return new EnumParameterType(byKeys, suggestions);
+        return new EnumParameterType(rawType, byKeys, suggestions);
     }
 
     private static final class EnumParameterType<E extends Enum<E>> implements ParameterType<CommandActor, E> {
+        private final Class<E> enumType;
         private final Map<String, E> byKeys;
         private final List<String> suggestions;
 
         private EnumParameterType(
-                Map<String, E> byKeys,
+                Class<E> enumType, Map<String, E> byKeys,
                 List<String> suggestions
         ) {
+            this.enumType = enumType;
             this.byKeys = byKeys;
             this.suggestions = suggestions;
         }
@@ -79,7 +81,7 @@ public enum EnumParameterTypeFactory implements ParameterType.Factory<CommandAct
             E value = byKeys.get(key.toLowerCase());
             if (value != null)
                 return value;
-            throw new EnumNotFoundException(key);
+            throw new EnumNotFoundException(key, enumType);
         }
 
         @Override public @NotNull SuggestionProvider<CommandActor> defaultSuggestions() {
