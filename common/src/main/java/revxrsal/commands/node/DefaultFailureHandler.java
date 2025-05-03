@@ -5,12 +5,14 @@ import org.jetbrains.annotations.Unmodifiable;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.command.CommandActor;
 import revxrsal.commands.command.Potential;
+import revxrsal.commands.exception.ExpectedLiteralException;
 import revxrsal.commands.exception.NoPermissionException;
 import revxrsal.commands.stream.StringStream;
 
 import java.util.List;
 
 import static revxrsal.commands.util.Collections.any;
+import static revxrsal.commands.util.Collections.filter;
 
 /**
  * The default failure handler. This can be overridden in {@link DispatcherSettings}
@@ -39,16 +41,18 @@ final class DefaultFailureHandler<A extends CommandActor> implements FailureHand
             failedAttempts.get(0).handleException();
             return;
         }
-        if (failedAttempts.get(0).error() instanceof NoPermissionException) {
-            failedAttempts.get(0).handleException();
-            return;
-        }
-        actor.error("Failed to find a suitable command for your input (\"" + input.source() + "\"). Did you mean:");
-        for (int i = 0; i < failedAttempts.size(); i++) {
-            if (i >= MAX_NUMBER_OF_SUGGESTIONS)
-                break;
-            Potential<A> failedAttempt = failedAttempts.get(i);
-            actor.reply("- " + failedAttempt.context().command().path());
+
+        List<Potential<A>> realExceptions = filter(failedAttempts, v -> !(v.error() instanceof ExpectedLiteralException));
+        if (realExceptions.isEmpty()) {
+            actor.error("Failed to find a suitable command for your input (\"" + input.source() + "\"). Did you mean:");
+            for (int i = 0; i < failedAttempts.size(); i++) {
+                if (i >= MAX_NUMBER_OF_SUGGESTIONS)
+                    break;
+                Potential<A> failedAttempt = failedAttempts.get(i);
+                actor.reply("- " + failedAttempt.context().command().path());
+            }
+        } else {
+            realExceptions.get(0).handleException();
         }
     }
 }
