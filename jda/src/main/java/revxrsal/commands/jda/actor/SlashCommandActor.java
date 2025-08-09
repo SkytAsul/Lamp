@@ -231,7 +231,7 @@ public interface SlashCommandActor extends CommandActor {
     /**
      * Reply to this interaction with a component tree.
      * <p>
-     * This can be used to send structured components such as nested layouts.
+     * Send a structured arrangement of interactive components.
      * The reply will also acknowledge the interaction.
      *
      * @param tree The component tree to send
