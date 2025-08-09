@@ -24,6 +24,8 @@
 package revxrsal.commands.jda.actor;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.User;
@@ -42,6 +44,8 @@ import org.jetbrains.annotations.Nullable;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.command.CommandActor;
 import revxrsal.commands.jda.exception.GuildOnlyCommandException;
+
+import java.util.Collection;
 
 /**
  * Represents a {@link CommandActor} that originated from a {@link SlashCommandInteractionEvent slash command},
@@ -189,6 +193,55 @@ public interface SlashCommandActor extends CommandActor {
     @Contract(pure = true)
     default ReplyCallbackAction replyToInteraction(@NotNull MessageCreateData content) {
         return commandEvent().reply(content);
+    }
+
+    /**
+     * Reply to this interaction with one or more message components.
+     * <p>
+     * This can be used to send interactive elements such as buttons or select menus
+     * as the message content. The reply will also acknowledge the interaction.
+     *
+     * @param components The components to include in the reply
+     * @return {@link ReplyCallbackAction}
+     * @see IReplyCallback#replyComponents(Collection)
+     */
+    @CheckReturnValue
+    @Contract(pure = true)
+    default ReplyCallbackAction replyToInteraction(@NotNull Collection<? extends MessageTopLevelComponent> components) {
+        return commandEvent().replyComponents(components);
+    }
+
+    /**
+     * Reply to this interaction with one or more message components.
+     * <p>
+     * This is a varargs overload for convenience when sending multiple components.
+     * The reply will also acknowledge the interaction.
+     *
+     * @param component The first component to include in the reply
+     * @param other     Additional components to include
+     * @return {@link ReplyCallbackAction}
+     * @see IReplyCallback#replyComponents(MessageTopLevelComponent, MessageTopLevelComponent...)
+     */
+    @CheckReturnValue
+    @Contract(pure = true)
+    default ReplyCallbackAction replyToInteraction(@NotNull MessageTopLevelComponent component, @NotNull MessageTopLevelComponent... other) {
+        return commandEvent().replyComponents(component, other);
+    }
+
+    /**
+     * Reply to this interaction with a component tree.
+     * <p>
+     * This can be used to send structured components such as nested layouts.
+     * The reply will also acknowledge the interaction.
+     *
+     * @param tree The component tree to send
+     * @return {@link ReplyCallbackAction}
+     * @see IReplyCallback#replyComponents(ComponentTree)
+     */
+    @CheckReturnValue
+    @Contract(pure = true)
+    default ReplyCallbackAction replyToInteraction(@NotNull ComponentTree<? extends MessageTopLevelComponent> tree) {
+        return commandEvent().replyComponents(tree);
     }
 
     /**
