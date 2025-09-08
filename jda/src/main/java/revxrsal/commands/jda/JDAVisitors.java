@@ -88,7 +88,7 @@ public final class JDAVisitors {
                         if (rename != null) {
                             SlashCommandData renamedData = parser.commands().get(rename);
                             if (renamedData != null) {
-                                jda.editCommandById(command.getId()).apply(renamedData).queue();
+                                jda.editCommandById(command.getType(), command.getId()).apply(renamedData).queue();
                                 notRegistered.remove(rename);
                             }
                         } else {
@@ -96,7 +96,7 @@ public final class JDAVisitors {
                             command.delete().queue();
                         }
                     } else {
-                        jda.editCommandById(command.getId()).apply(data).queue();
+                        jda.editCommandById(command.getType(), command.getId()).apply(data).queue();
                     }
                 }
                 notRegistered.values().forEach(newCommand ->

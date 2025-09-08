@@ -24,6 +24,7 @@
 package revxrsal.commands.jda.slash;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -57,7 +58,8 @@ public final class JDAParser<A extends SlashCommandActor> {
 
         SlashCommandData slash = slash(name, description);
         slash.setNSFW(executable.annotations().contains(NSFW.class));
-        slash.setGuildOnly(executable.annotations().contains(GuildOnly.class));
+        if (executable.annotations().contains(GuildOnly.class))
+            slash.setContexts(InteractionContextType.GUILD);
 
         String renameFrom = executable.annotations().map(RenameFrom.class, RenameFrom::value);
         if (renameFrom != null)
