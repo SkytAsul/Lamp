@@ -166,6 +166,8 @@ public final class BrigadierParser<S, A extends CommandActor> {
                     lastNode.then(child);
                 }
             }
+            if (flags.stream().allMatch(p -> p.isSwitch() || p.isOptional()))
+                lastNode.executes(createAction(command));
             return (LiteralCommandNode<S>) firstNode.asBrigadierNode();
         }
         List<BNode<S>> addOptionalsTo = new ArrayList<>();
