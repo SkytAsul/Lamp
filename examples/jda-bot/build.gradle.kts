@@ -11,7 +11,7 @@ repositories {
 dependencies {
     implementation(project(":common"))
     implementation(project(":jda"))
-    implementation("net.dv8tion:JDA:5.1.0")
+    implementation("net.dv8tion:JDA:6.0.0-rc.1")
 }
 
 tasks.withType<JavaCompile> {
