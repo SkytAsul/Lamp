@@ -27,6 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.annotation.list.AnnotationList;
+import revxrsal.commands.exception.NoPermissionException;
+import revxrsal.commands.node.ExecutionContext;
 
 import java.lang.annotation.Annotation;
 import java.util.function.Function;
@@ -72,6 +74,14 @@ public interface CommandPermission<A extends CommandActor> extends Predicate<A> 
      */
     @Override default boolean test(A a) {
         return isExecutableBy(a);
+    }
+
+    /**
+     * Called when a command condition should be interrupted by lack of this permission.
+     * @param context Command context
+     */
+    default void throwMissingPermission(@NotNull ExecutionContext<A> context) {
+        throw new NoPermissionException(context.command());
     }
 
     /**
