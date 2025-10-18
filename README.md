@@ -42,7 +42,7 @@ robust solution with a clean, idiomatic API.
 ```java
 @Command("greet user")
 @Description("Sends a greeting message")
-public void greet(CommandActor actor, @Optional("World") String name) {
+public void greet(CommandActor actor, @Default("World") String name) {
     actor.reply("Hello, " + name + "!");
 }
 ```
