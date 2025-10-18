@@ -80,7 +80,13 @@ public final class MinestomCommandHooks<A extends MinestomCommandActor> implemen
             Command c = new Command(k);
             c.setCondition((sender, cmd) -> {
                 A actor = actorFactory.create(sender, command.lamp());
-                return command.permission().isExecutableBy(actor);
+                if (cmd == null) {
+                    // Minestom is checking whether to declare this command to the client
+                    return command.permission().isExecutableBy(actor);
+                } else {
+                    // For actual execution, command conditions should be left to run for user feedback
+                    return true;
+                }
             });
             MinecraftServer.getCommandManager().register(c);
             return c;
