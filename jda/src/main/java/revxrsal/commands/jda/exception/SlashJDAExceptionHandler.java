@@ -37,7 +37,7 @@ public class SlashJDAExceptionHandler<A extends SlashCommandActor> extends Defau
 
     @HandleException
     public void onMemberNotInGuild(MemberNotInGuildException e, SlashCommandActor actor) {
-        actor.commandEvent().reply("🛑 User **" + e.suppliedUser().getEffectiveName() + "** is not in this guild.").queue();
+        actor.commandEvent().getHook().sendMessage("🛑 User **" + e.suppliedUser().getEffectiveName() + "** is not in this guild.").setEphemeral(true).queue();
     }
 
     @HandleException
@@ -45,22 +45,22 @@ public class SlashJDAExceptionHandler<A extends SlashCommandActor> extends Defau
         String typeName = e.expectedType().getSimpleName();
         String exp = separateCamelCase(typeName, " ").toLowerCase(Locale.ENGLISH);
         String rec = e.channel().getType().name().toLowerCase().replace('_', ' ');
-        actor.commandEvent().reply("🛑 Wrong channel type. Expected a **" + exp + "**, received a **" + rec + "**.").queue();
+        actor.commandEvent().getHook().sendMessage("🛑 Wrong channel type. Expected a **" + exp + "**, received a **" + rec + "**.").setEphemeral(true).queue();
     }
 
     @HandleException
     public void onGuildOnlyCommand(GuildOnlyCommandException e, SlashCommandActor actor) {
-        actor.commandEvent().reply("🛑 This command can only be used in guilds").queue();
+        actor.commandEvent().getHook().sendMessage("🛑 This command can only be used in guilds").setEphemeral(true).queue();
     }
 
     @Override public void onCommandInvocation(@NotNull CommandInvocationException e, @NotNull A actor) {
-        actor.commandEvent().reply("🛑 An error has occurred while executing this command. Please contact the developers." +
-                " Errors have been printed to the console.").queue();
+        actor.commandEvent().getHook().sendMessage("🛑 An error has occurred while executing this command. Please contact the developers." +
+                " Errors have been printed to the console.").setEphemeral(true).queue();
         e.cause().printStackTrace();
     }
 
     @Override public void onNoPermission(@NotNull NoPermissionException e, @NotNull A actor) {
-        actor.replyToInteraction("🛑 You do not have permission to execute this command!").queue();
+        actor.replyToInteraction("🛑 You do not have permission to execute this command!").setEphemeral(true).queue();
     }
 
     @HandleException
@@ -76,9 +76,9 @@ public class SlashJDAExceptionHandler<A extends SlashCommandActor> extends Defau
     @Override
     public void onInvalidHelpPage(@NotNull InvalidHelpPageException e, @NotNull A actor) {
         if (e.numberOfPages() == 1)
-            actor.replyToInteraction("🛑 Invalid help page: **" + e.page() + "**. Must be 1.").queue();
+            actor.replyToInteraction("🛑 Invalid help page: **" + e.page() + "**. Must be 1.").setEphemeral(true).queue();
         else
-            actor.replyToInteraction("🛑 Invalid help page: **" + e.page() + "**. Must be between 1 and " + e.numberOfPages()).queue();
+            actor.replyToInteraction("🛑 Invalid help page: **" + e.page() + "**. Must be between 1 and " + e.numberOfPages()).setEphemeral(true).queue();
     }
 
     @HandleException
