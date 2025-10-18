@@ -25,7 +25,6 @@ package revxrsal.commands.command;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import revxrsal.commands.exception.NoPermissionException;
 import revxrsal.commands.node.ExecutionContext;
 import revxrsal.commands.process.CommandCondition;
 
@@ -36,7 +35,8 @@ public enum PermissionConditionChecker implements CommandCondition<CommandActor>
 
     @Override
     public void test(@NotNull ExecutionContext<CommandActor> context) {
-        if (!context.command().permission().isExecutableBy(context.actor()))
-            throw new NoPermissionException(context.command());
+        if (!context.command().permission().isExecutableBy(context.actor())) {
+            context.command().permission().throwMissingPermission(context);
+        }
     }
 }
